@@ -94,11 +94,20 @@ main{max-width:760px;margin:auto;padding:12px}
 @keyframes flash{0%{box-shadow:0 0 0 0 #ffd21fcc}100%{box-shadow:0 0 0 16px #ffd21f00}}
 .ah{display:flex;align-items:flex-start;gap:10px}
 .an{flex:1;min-width:0}
-.nm{font-weight:800;font-size:17px;overflow-wrap:anywhere}
+.nm{font-weight:800;font-size:17px;overflow-wrap:anywhere}.an{cursor:pointer}.nm::after{content:" ›";color:var(--mut);font-weight:600}
 .ct{font-size:12px;color:var(--mut);margin-top:2px}
 .at{text-align:right;flex:none}
 .at b{display:block;font-size:22px;line-height:1;font-weight:850}
-.at span{font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:.6px;font-weight:700}
+.at span{display:block;font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:.6px;font-weight:700;margin-top:3px}
+.at small{display:block;margin-top:5px;font-size:12.5px;font-weight:800;color:var(--ink);background:var(--s2);border:1px solid var(--line);border-radius:8px;padding:2px 7px}
+.upto{display:grid;grid-template-columns:48px 1fr 48px;gap:6px;margin-top:10px}
+.upto button{height:48px;border-radius:12px;background:var(--s1);border:1px solid var(--line);font-size:24px}
+.upto select{font-weight:800}
+.prog-t{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:6px}
+.prog-t th{font-size:10.5px;text-transform:uppercase;color:var(--mut);font-weight:800;padding:6px 4px;border-bottom:1px solid var(--line);text-align:center}
+.prog-t td{padding:6px 4px;border-bottom:1px solid var(--line);text-align:center}
+.prog-t td:last-child{font-weight:900}
+.prog-t .dot{width:26px;height:26px;font-size:12px;display:inline-grid;margin:0 1px}
 .row2{display:flex;align-items:center;gap:10px;margin-top:12px}
 .slot{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;font-size:20px;font-weight:850;flex:none;position:relative}
 .slot:not(.empty)::after{content:"";position:absolute;inset:5px;border-radius:50%;border:1.5px solid #0000002e}
@@ -265,7 +274,7 @@ textarea.in{min-height:96px;resize:vertical;font-size:14px;font-family:ui-monosp
 
 <script>
 (()=>{'use strict';
-const KEY='recorrido3d_v1', APPVER='1.0.0';
+const KEY='recorrido3d_v1', APPVER='1.1.0';
 const VALUES=[11,10,8,5,0];
 const ENC={11:'E',10:'T',8:'8',5:'5',0:'0'}, DEC={E:11,T:10,'8':8,'5':5,'0':0};
 const DEF_MODS=['Compuesto','Arco desnudo','Instintivo','Longbow','Tradicional','Recurvo'];
@@ -301,21 +310,23 @@ const ownA=j=>j.archers.filter(a=>a.own);
 
 const pts=s=>(s[0]??0)+(s[1]??0);
 const full=s=>s[0]!=null&&s[1]!=null;
-const tot=a=>a.scores.reduce((t,s)=>t+pts(s),0);
+const lim=(a,u)=>u?a.scores.slice(0,u):a.scores;
+const tot=(a,u)=>lim(a,u).reduce((t,s)=>t+pts(s),0);
 const nArrows=a=>a.scores.reduce((t,s)=>t+(s[0]!=null)+(s[1]!=null),0);
-const cnt=(a,v)=>a.scores.reduce((t,s)=>t+(s[0]===v)+(s[1]===v),0);
-const doneT=a=>a.scores.filter(full).length;
+const cnt=(a,v,u)=>lim(a,u).reduce((t,s)=>t+(s[0]===v)+(s[1]===v),0);
+const doneT=(a,u)=>lim(a,u).filter(full).length;
 const sexShort=s=>s==='Masculino'?'Masc.':s==='Femenino'?'Fem.':s;
 const catOf=a=>[a.mod,sexShort(a.sex),a.age].filter(Boolean).join(' · ')||'Sin categoría';
-function cmp(a,b){return tot(b)-tot(a)||cnt(b,11)-cnt(a,11)||cnt(b,10)-cnt(a,10)}
-function ranked(list){const s=[...list].sort((a,b)=>cmp(a,b)||a.name.localeCompare(b.name,'es'));let pos=0;return s.map((a,i)=>{if(i===0||cmp(s[i-1],a)!==0)pos=i+1;return {a,pos}})}
+function cmp(a,b,u){return tot(b,u)-tot(a,u)||cnt(b,11,u)-cnt(a,11,u)||cnt(b,10,u)-cnt(a,10,u)}
+function ranked(list,u){const s=[...list].sort((a,b)=>cmp(a,b,u)||a.name.localeCompare(b.name,'es'));let pos=0;return s.map((a,i)=>{if(i===0||cmp(s[i-1],a,u)!==0)pos=i+1;return {a,pos}})}
 function groups(list){const m=new Map();list.forEach(a=>{const k=catOf(a);if(!m.has(k))m.set(k,[]);m.get(k).push(a)});const S=db.settings,ix=(arr,v)=>{const i=arr.indexOf(v);return i<0?99:i};
   return [...m.entries()].sort((x,y)=>{const a=x[1][0],b=y[1][0];return ix(S.mods,a.mod)-ix(S.mods,b.mod)||ix(SEXES,a.sex)-ix(SEXES,b.sex)||ix(S.ages,a.age)-ix(S.ages,b.age)||x[0].localeCompare(y[0],'es')})}
 const avColor=a=>({Compuesto:'#ffd21f','Arco desnudo':'#e3262e',Instintivo:'#1f7fe0',Longbow:'#f7f7f2',Tradicional:'#c9cdd5',Recurvo:'#d08a4c'}[a.mod]||'#9aa0aa');
 const initials=n=>n.split(/\s+/).filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase();
 
 /* ---------- Estado de interfaz ---------- */
-let view=J()?'score':'jornadas', mapOpen=false, editSlot=null, rankMode='general', undo=[], deferredPrompt=null;
+let view=J()?'score':'jornadas', mapOpen=false, editSlot=null, rankMode='general', rankUpTo=0, undo=[], deferredPrompt=null;
+const upTo=j=>(rankUpTo>0&&rankUpTo<j.n)?rankUpTo:0;
 
 /* ---------- Utilidades UI ---------- */
 function toast(m,ms=2300){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),ms)}
@@ -380,7 +391,7 @@ function cardHtml(a,i){const s=a.scores[i],es=editSlot&&editSlot.aid===a.id?edit
   const slot=k=>s[k]==null?`<button class="slot empty" data-slot="${k}" aria-label="Flecha ${k+1} sin anotar">${k+1}ª</button>`
     :`<button class="slot v${s[k]} ${es===k?'sel':''}" data-slot="${k}" aria-label="Flecha ${k+1}: ${s[k]}. Tocar para corregir">${s[k]}</button>`;
   return `<article class="card ac ${full(s)?'done':''}" data-aid="${esc(a.id)}">
-    <div class="ah"><div class="an"><div class="nm">${esc(a.name)}</div><div class="ct">${esc(catOf(a))}</div></div><div class="at"><b>${tot(a)}</b><span>Total</span></div></div>
+    <div class="ah"><div class="an"><div class="nm">${esc(a.name)}</div><div class="ct">${esc(catOf(a))}</div></div><div class="at"><b>${tot(a,i+1)}</b><span>Hasta la ${i+1}</span>${tot(a,i+1)!==tot(a)?`<small>Total: ${tot(a)}</small>`:''}</div></div>
     <div class="row2">${slot(0)}${slot(1)}<div class="tsum"><b>${pts(s)}</b><span>esta diana</span></div>${s[0]!=null?`<button class="clr" data-clra aria-label="Borrar flechas de ${esc(a.name)} en esta diana">✕</button>`:''}</div>
     <div class="pad">${VALUES.map(v=>`<button class="sb v${v}" data-v="${v}" aria-label="${v} puntos">${v}</button>`).join('')}</div>
     ${es>=0?'<div class="hint">Elige el valor correcto para la flecha marcada</div>':''}
@@ -409,19 +420,23 @@ function doUndo(){const u=undo.pop();if(!u)return;const j=db.jornadas.find(x=>x.
 function goT(t){const j=J();t=Math.min(j.n,Math.max(1,t));if(t===j.cur)return;j.cur=t;editSlot=null;save();render();scrollTo({top:0,behavior:'smooth'})}
 
 /* ===== CLASIFICACIÓN ===== */
-function podium(r,mini){const top=r.slice(0,3);if(!top.length||!top.some(x=>nArrows(x.a)))return '';
+function podium(r,mini,u){const top=r.slice(0,3);if(!top.length||!top.some(x=>nArrows(x.a)))return '';
   const medal=p=>['gold','silver','bronze'][p-1]||'bronze',emo=p=>['🥇','🥈','🥉'][p-1]||'🏅';
   return `<div class="podium ${mini?'mini':''}">${[1,0,2].map(k=>{const x=top[k];if(!x)return '<div></div>';
-    return `<button class="pod p${k+1} ${medal(x.pos)}" data-stat="${esc(x.a.id)}" style="--d:${[0.15,0,0.3][k]}s"><span class="medal">${emo(x.pos)}</span><span class="pn">${esc(x.a.name)}</span><span class="pp">${tot(x.a)}</span><span class="blk">${x.pos}</span></button>`}).join('')}</div>`}
-function table(r,j,showCat=true){return `<div class="tw"><table class="rt"><thead><tr><th>#</th><th>Tirador</th><th>Pts</th><th>11</th><th>10</th><th>Dianas</th></tr></thead><tbody>${r.map(({a,pos})=>
-  `<tr data-stat="${esc(a.id)}"><td><span class="rk ${pos<=3?'r'+pos:''}">${pos}</span></td><td><div class="tn">${esc(a.name)}${a.own?'':`<span class="tag">P${esc(a.patrol||'?')}</span>`}</div>${showCat?`<div class="tc">${esc(catOf(a))}</div>`:''}</td><td class="tp">${tot(a)}</td><td>${cnt(a,11)}</td><td>${cnt(a,10)}</td><td>${doneT(a)}/${j.n}</td></tr>`).join('')}</tbody></table></div>`}
+    return `<button class="pod p${k+1} ${medal(x.pos)}" data-stat="${esc(x.a.id)}" style="--d:${[0.15,0,0.3][k]}s"><span class="medal">${emo(x.pos)}</span><span class="pn">${esc(x.a.name)}</span><span class="pp">${tot(x.a,u)}</span><span class="blk">${x.pos}</span></button>`}).join('')}</div>`}
+function table(r,j,showCat=true,u=0){return `<div class="tw"><table class="rt"><thead><tr><th>#</th><th>Tirador</th><th>Pts</th><th>11</th><th>10</th><th>Dianas</th></tr></thead><tbody>${r.map(({a,pos})=>
+  `<tr data-stat="${esc(a.id)}"><td><span class="rk ${pos<=3?'r'+pos:''}">${pos}</span></td><td><div class="tn">${esc(a.name)}${a.own?'':`<span class="tag">P${esc(a.patrol||'?')}</span>`}</div>${showCat?`<div class="tc">${esc(catOf(a))}</div>`:''}</td><td class="tp">${tot(a,u)}</td><td>${cnt(a,11,u)}</td><td>${cnt(a,10,u)}</td><td>${doneT(a,u)}/${u||j.n}</td></tr>`).join('')}</tbody></table></div>`}
 function vRank(j){const all=j.archers;
   if(!all.length)return empty('Aún no hay clasificación','Añade tiradores o importa las patrullas para ver la clasificación.','<div class="grid2" style="margin-top:16px"><button class="btn prim" data-tab="archers">Añadir tiradores</button><button class="btn" data-act="import">Importar patrulla</button></div>');
-  const imp=all.filter(a=>!a.own).length;
+  const imp=all.filter(a=>!a.own).length,u=upTo(j);
   let body='';
-  if(rankMode==='general'){const r=ranked(all);body=`<div class="card">${podium(r)}${table(r,j)}</div>`}
-  else body=groups(all).map(([c,l])=>{const r=ranked(l);return `<div class="card catsec"><h3>${esc(c)} <span class="count">${l.length}</span></h3>${podium(r,true)}${table(r,j,false)}</div>`}).join('');
+  if(rankMode==='general'){const r=ranked(all,u);body=`<div class="card">${podium(r,false,u)}${table(r,j,true,u)}</div>`}
+  else body=groups(all).map(([c,l])=>{const r=ranked(l,u);return `<div class="card catsec"><h3>${esc(c)} <span class="count">${l.length}</span></h3>${podium(r,true,u)}${table(r,j,false,u)}</div>`}).join('');
   return `<div class="seg" role="tablist"><button class="${rankMode==='general'?'on':''}" data-rm="general">General</button><button class="${rankMode==='cat'?'on':''}" data-rm="cat">Por categorías</button></div>
+  <div class="upto"><button data-ustep="-1" aria-label="Diana anterior" ${u===1?'disabled':''}>‹</button>
+    <select class="in" id="uptoSel" aria-label="Ver la clasificación hasta la diana">${`<option value="0" ${u?'':'selected'}>Total · todas las dianas</option>`+Array.from({length:j.n-1},(_,k)=>`<option value="${k+1}" ${u===k+1?'selected':''}>Hasta la diana ${k+1}</option>`).join('')}</select>
+    <button data-ustep="1" aria-label="Diana siguiente" ${u?'':'disabled'}>›</button></div>
+  ${u?`<div class="note" style="border-color:var(--y)">📍 Clasificación tal como estaba <b>al terminar la diana ${u}</b>. Pulsa › hasta “Total” para volver al resultado completo.</div>`:''}
   ${imp?`<div class="note">Incluye ${imp} tirador${imp>1?'es':''} de otras patrullas importados por WhatsApp.</div>`:''}
   ${body}
   <p class="mut" style="margin:10px 4px 0;font-size:12px">Desempate: más 11, después más 10. Toca un tirador para ver sus estadísticas.</p>
@@ -454,7 +469,9 @@ function statSheet(id){const j=J(),a=j?.archers.find(x=>x.id===id);if(!a)return;
    <div class="dlist">${VALUES.map(v=>`<div><b class="v${v}">${v}</b>${cnt(a,v)} · ${pct(v)}%</div>`).join('')}</div>
    <h4>Puntos por diana</h4>
    <svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Puntos por diana">${[22,11].map(v=>`<line x1="0" x2="${W}" y1="${H-20-v/22*(H-34)}" y2="${H-20-v/22*(H-34)}" stroke="var(--line)"/><text x="${W}" y="${H-23-v/22*(H-34)}" text-anchor="end" font-size="9" fill="var(--mut)">${v}</text>`).join('')}${bars}${done?`<line x1="0" x2="${W}" y1="${ay}" y2="${ay}" stroke="var(--ink)" stroke-dasharray="4 4" opacity=".6"/>`:''}${ticks}</svg>
-   <p class="mut" style="font-size:12px;margin-top:6px">Línea discontinua: media por diana.</p>`)}
+   <p class="mut" style="font-size:12px;margin-top:6px">Línea discontinua: media por diana.</p>
+   <h4>Diana a diana</h4>
+   <table class="prog-t"><thead><tr><th>Diana</th><th>Flechas</th><th>Puntos</th><th>Acumulado</th></tr></thead><tbody>${(()=>{let run=0;return a.scores.map((s,i)=>{run+=pts(s);return `<tr${i+1===j.cur&&a.own?' style="background:var(--s2)"':''}><td>${i+1}</td><td>${[0,1].map(k=>s[k]==null?'<span class="dot e">–</span>':`<span class="dot v${s[k]}">${s[k]}</span>`).join('')}</td><td>${s[0]==null?'–':pts(s)}</td><td>${s[0]==null&&!a.scores.slice(i+1).some(x=>x[0]!=null)?'–':run}</td></tr>`}).join('')})()}</tbody></table>`)}
 
 /* ===== TIRADORES ===== */
 function archerFields(a={}){const S=db.settings,L=S.last||{};const mod=a.mod??L.mod??'',sex=a.sex??L.sex??'',age=a.age??L.age??'';
@@ -530,8 +547,8 @@ async function nativeShare(data){if(!navigator.share)return false;try{await navi
 function textSheet(title,text,intro=''){sheet(`${shead(title)}${intro}<div class="preview">${esc(text)}</div>
   <div class="stack" style="margin-top:12px"><button class="btn wa wide" data-s="wa">${WA_ICON} Enviar por WhatsApp</button><div class="grid2"><button class="btn" data-s="copy">Copiar</button><button class="btn" data-s="share">Otras apps…</button></div></div>`,s=>{
   s.addEventListener('click',async e=>{const b=e.target.closest('[data-s]');if(!b)return;if(b.dataset.s==='wa')openWA(text);else if(b.dataset.s==='copy')copyText(text);else if(!(await nativeShare({text})))copyText(text)})})}
-function rankText(j){let t=`🎯 *${j.name}*\n📅 ${fmtDate(j.date)} · ${j.n} dianas\n`;
-  const block=(title,list)=>{let s=`\n🏆 *${title}*\n`;ranked(list).forEach(({a,pos})=>{const m=['🥇','🥈','🥉'][pos-1]||`${pos}.`;s+=`${m} ${a.name} — *${tot(a)}* (11×${cnt(a,11)} · 10×${cnt(a,10)})${doneT(a)<j.n?` [${doneT(a)}/${j.n}]`:''}\n`});return s};
+function rankText(j){const u=upTo(j);let t=`🎯 *${j.name}*\n📅 ${fmtDate(j.date)} · ${j.n} dianas${u?`\n📍 Tras la diana ${u}`:''}\n`;
+  const block=(title,list)=>{let s=`\n🏆 *${title}*\n`;ranked(list,u).forEach(({a,pos})=>{const m=['🥇','🥈','🥉'][pos-1]||`${pos}.`,L=u||j.n;s+=`${m} ${a.name} — *${tot(a,u)}* (11×${cnt(a,11,u)} · 10×${cnt(a,10,u)})${doneT(a,u)<L?` [${doneT(a,u)}/${L}]`:''}\n`});return s};
   if(rankMode==='general')t+=block('Clasificación general',j.archers);else groups(j.archers).forEach(([c,l])=>t+=block(c,l));
   return t+'\n_Recorrido 3D_'}
 function b64e(s){const b=new TextEncoder().encode(s);let bin='';for(let i=0;i<b.length;i+=8192)bin+=String.fromCharCode.apply(null,b.subarray(i,i+8192));return btoa(bin)}
@@ -607,7 +624,7 @@ function compareSheet(p){const j=J();const own=ownA(j);const pairs=[],missing=[]
   return s}
 
 /* ---------- Imagen de la clasificación ---------- */
-function rankBlob(j){const gs=rankMode==='general'?[['Clasificación general',j.archers]]:groups(j.archers);
+function rankBlob(j){const u=upTo(j);const gs=rankMode==='general'?[['Clasificación general',j.archers]]:groups(j.archers);
   const W=1080,P=64,RH=84;let H=300;gs.forEach(([,l])=>H+=96+l.length*RH);H+=90;
   const c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');const F=(w,s)=>`${w} ${s}px system-ui,-apple-system,"Segoe UI",Roboto,sans-serif`;
   const fit=(t,max)=>{if(x.measureText(t).width<=max)return t;while(t.length>1&&x.measureText(t+'…').width>max)t=t.slice(0,-1);return t+'…'};
@@ -615,17 +632,17 @@ function rankBlob(j){const gs=rankMode==='general'?[['Clasificación general',j.
   [['#ffd21f',70],['#e3262e',140],['#1f7fe0',210],['#5a5f6a',280],['#f7f7f2',350]].forEach(([col,r])=>{x.beginPath();x.arc(W-30,110,r,0,Math.PI*2);x.strokeStyle=col;x.globalAlpha=.18;x.lineWidth=30;x.stroke()});x.globalAlpha=1;
   [['#f7f7f2',1],['#111',.8],['#1f7fe0',.6],['#e3262e',.4],['#ffd21f',.2]].forEach(([col,k])=>{x.beginPath();x.arc(P+52,124,52*k,0,Math.PI*2);x.fillStyle=col;x.fill()});
   x.textBaseline='middle';x.fillStyle='#fff';x.font=F(850,54);x.fillText(fit(j.name,W-P*2-140),P+130,104);
-  x.fillStyle='#a3a8b1';x.font=F(500,30);x.fillText(`${fmtDate(j.date)} · ${j.n} dianas · ${j.archers.length} tiradores`,P+130,154);
+  x.fillStyle='#a3a8b1';x.font=F(500,30);x.fillText(`${fmtDate(j.date)} · ${u?'Tras la diana '+u+' de '+j.n:j.n+' dianas'} · ${j.archers.length} tiradores`,P+130,154);
   const rr=(X,Y,w,h,r)=>{x.beginPath();if(x.roundRect)x.roundRect(X,Y,w,h,r);else x.rect(X,Y,w,h)};
   let y=262;
   gs.forEach(([title,list])=>{x.fillStyle='#ffd21f';x.font=F(850,32);x.textAlign='left';x.fillText(fit(title.toUpperCase(),W-2*P),P,y);y+=30;x.fillStyle='#2a2d34';x.fillRect(P,y,W-2*P,3);y+=24;
-    ranked(list).forEach(({a,pos},k)=>{const cy=y+RH/2-6;if(k%2===0){x.fillStyle='#16181c';rr(P-14,y-4,W-2*P+28,RH-4,18);x.fill()}
+    ranked(list,u).forEach(({a,pos},k)=>{const cy=y+RH/2-6;if(k%2===0){x.fillStyle='#16181c';rr(P-14,y-4,W-2*P+28,RH-4,18);x.fill()}
       x.beginPath();x.arc(P+30,cy,27,0,Math.PI*2);x.fillStyle=['#ffd21f','#c9cdd5','#d08a4c'][pos-1]||'#2a2e36';x.fill();
       x.fillStyle=pos<=3?'#111':'#fff';x.font=F(850,26);x.textAlign='center';x.fillText(String(pos),P+30,cy+1);
       x.textAlign='left';x.fillStyle='#fff';x.font=F(750,34);x.fillText(fit(a.name,W-2*P-380),P+80,cy-13);
       x.fillStyle='#a3a8b1';x.font=F(500,22);x.fillText(fit(catOf(a)+(a.own?'':` · P${a.patrol||'?'}`),W-2*P-380),P+80,cy+20);
-      x.textAlign='right';x.fillStyle='#fff';x.font=F(900,46);x.fillText(String(tot(a)),W-P,cy);
-      x.fillStyle='#a3a8b1';x.font=F(600,22);x.fillText(`11×${cnt(a,11)}  10×${cnt(a,10)}`,W-P-120,cy-12);x.fillText(`${doneT(a)}/${j.n} dianas`,W-P-120,cy+18);
+      x.textAlign='right';x.fillStyle='#fff';x.font=F(900,46);x.fillText(String(tot(a,u)),W-P,cy);
+      x.fillStyle='#a3a8b1';x.font=F(600,22);x.fillText(`11×${cnt(a,11,u)}  10×${cnt(a,10,u)}`,W-P-120,cy-12);x.fillText(`${doneT(a,u)}/${u||j.n} dianas`,W-P-120,cy+18);
       y+=RH});y+=42});
   x.textAlign='center';x.fillStyle='#6d727c';x.font=F(600,24);x.fillText('🎯 Recorrido 3D',W/2,H-46);
   return new Promise(r=>c.toBlob(r,'image/png'))}
@@ -697,11 +714,13 @@ document.addEventListener('click',e=>{const t=e.target;let el;
   if(card){const aid=card.dataset.aid;
     if(el=t.closest('[data-v]')){setScore(aid,+el.dataset.v);return}
     if(el=t.closest('[data-slot]')){slotTap(aid,+el.dataset.slot);return}
-    if(t.closest('[data-clra]')){clearArcher(aid);return}}
+    if(t.closest('[data-clra]')){clearArcher(aid);return}
+    if(t.closest('.an')){statSheet(aid);return}}
   if(el=t.closest('[data-tab]')){closeSheet();go(el.dataset.tab);return}
   if(el=t.closest('[data-t]')){goT(+el.dataset.t);return}
   if(el=t.closest('[data-stat]')){statSheet(el.dataset.stat);return}
   if(el=t.closest('[data-rm]')){rankMode=el.dataset.rm;render();return}
+  if(el=t.closest('[data-ustep]')){const j=J(),cu=upTo(j)||j.n;let nu=cu+(+el.dataset.ustep);rankUpTo=nu>=j.n?0:Math.max(1,nu);render();return}
   if(el=t.closest('[data-open]')){db.activeId=el.dataset.open;undo=[];save();go('score');return}
   if(el=t.closest('[data-editj]')){jSheet(el.dataset.editj);return}
   if(el=t.closest('[data-dupj]')){jSheet(null,el.dataset.dupj);return}
@@ -709,6 +728,7 @@ document.addEventListener('click',e=>{const t=e.target;let el;
   if(el=t.closest('[data-edita]')){editArcherSheet(el.dataset.edita);return}
   if(el=t.closest('[data-dela]')){delArcher(el.dataset.dela);return}
   if(el=t.closest('[data-up]')){moveUp(el.dataset.up);return}});
+document.addEventListener('change',e=>{if(e.target.id==='uptoSel'){rankUpTo=+e.target.value;render()}});
 document.addEventListener('submit',e=>{if(e.target.id==='addA'){e.preventDefault();addArcher(e.target)}});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('.sheetwrap'))closeSheet();
   if(view==='score'&&!$('.sheetwrap')&&!/INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName||'')&&J()){if(e.key==='ArrowRight')goT(J().cur+1);if(e.key==='ArrowLeft')goT(J().cur-1)}});
