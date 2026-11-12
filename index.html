@@ -1,0 +1,727 @@
+<!doctype html>
+<html lang="es" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111316">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Recorrido 3D">
+<meta name="description" content="Puntuación de recorridos de tiro con arco 3D">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<title>Recorrido 3D</title>
+<style>
+:root{--y:#ffd21f;--r:#e3262e;--b:#1f7fe0;--k:#0a0a0a;--w:#f7f7f2;--abh:64px}
+[data-theme=dark]{--bg:#0b0c0e;--bar:#111316;--s1:#16181c;--s2:#1f2228;--s3:#343842;--line:#2a2d34;--ink:#f4f4ef;--mut:#989da7;--prim:#ffd21f;--primInk:#111;--acc:#ffd21f;--shadow:0 6px 22px #0007;color-scheme:dark}
+[data-theme=light]{--bg:#f2f1ec;--bar:#ffffff;--s1:#ffffff;--s2:#f2f1ec;--s3:#cfccc2;--line:#dedbd1;--ink:#15161a;--mut:#676a72;--prim:#15161a;--primInk:#ffd21f;--acc:#e3262e;--shadow:0 6px 18px #0000001a;color-scheme:light}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+body{min-height:100vh;padding-bottom:calc(170px + env(safe-area-inset-bottom));overscroll-behavior-y:none}
+body.noscroll{overflow:hidden}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none;padding:0;touch-action:manipulation}
+button:disabled{opacity:.35;cursor:default}
+:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+h2{font-size:19px;margin:0;letter-spacing:-.2px}h3{font-size:15px;margin:0}
+.mut{color:var(--mut);font-size:13.5px;line-height:1.45}
+
+/* Cabecera con anillos */
+.appbar{position:sticky;top:0;z-index:20;overflow:hidden;background:var(--bar);border-bottom:1px solid var(--line);padding:calc(env(safe-area-inset-top) + 10px) 14px 10px}
+.appbar .rings{position:absolute;right:-64px;top:50%;width:230px;height:230px;transform:translateY(-50%);opacity:.28;pointer-events:none}
+.appbar .in{position:relative;display:flex;align-items:center;gap:12px;max-width:760px;margin:auto}
+.logo{width:40px;height:40px;flex:none;filter:drop-shadow(0 2px 6px #0005)}
+.ttl{flex:1;min-width:0}
+.ttl h1{margin:0;font-size:20px;letter-spacing:-.4px;font-weight:850;line-height:1.1}
+.ttl p{margin:2px 0 0;font-size:12.5px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.iconbtn{width:42px;height:42px;flex:none;border-radius:12px;display:grid;place-items:center;background:var(--s2);border:1px solid var(--line)}
+.iconbtn svg{width:21px;height:21px}
+main{max-width:760px;margin:auto;padding:12px}
+
+/* Botones */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:10px 16px;border-radius:13px;background:var(--s2);border:1px solid var(--line);font-weight:750;font-size:15px;text-align:center;line-height:1.2}
+.btn:active{transform:scale(.98)}
+.btn.prim{background:var(--prim);color:var(--primInk);border-color:transparent}
+.btn.wa{background:#1fa855;color:#fff;border-color:transparent}
+.btn.danger{background:transparent;color:var(--r);border-color:#e3262e66}
+.btn.wide{width:100%}
+.btn.opt{flex-direction:column;gap:2px;padding:12px 14px}.btn.opt small{font-weight:500;opacity:.8;font-size:12.5px}
+.btn.sm{min-height:36px;padding:6px 12px;font-size:13px;border-radius:10px}
+.btn svg{width:18px;height:18px;flex:none}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.stack{display:grid;gap:8px}
+
+.card{background:var(--s1);border:1px solid var(--line);border-radius:18px;padding:14px;margin-top:12px;box-shadow:var(--shadow)}
+.sechead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:22px 4px 0}
+.count{background:var(--s2);border:1px solid var(--line);border-radius:99px;padding:3px 10px;font-size:12px;font-weight:800;color:var(--mut)}
+.empty{text-align:center;padding:34px 18px}
+.empty svg{width:120px;height:120px;margin-bottom:10px}
+.empty b{display:block;font-size:18px;margin-bottom:6px}
+.empty .btn{margin-top:16px}
+
+/* Barra de diana */
+.tbar{position:sticky;top:var(--abh);z-index:15;display:grid;grid-template-columns:58px 1fr 58px;gap:8px;align-items:center;margin:-12px -12px 0;padding:10px 12px 8px;background:var(--bg)}
+.tbar .nav{height:58px;border-radius:16px;background:var(--s1);border:1px solid var(--line);font-size:30px;font-weight:600;line-height:1}
+.tnum{height:58px;border-radius:16px;background:var(--s1);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;gap:8px}
+.tnum small{font-size:11px;font-weight:800;letter-spacing:1px;color:var(--mut)}
+.tnum b{font-size:32px;font-weight:900;letter-spacing:-1px;color:var(--acc)}
+.tnum span{font-size:13px;color:var(--mut);font-weight:650}
+.prog{height:6px;border-radius:9px;background:var(--s2);overflow:hidden;margin:2px 0 4px}
+.prog i{display:block;height:100%;background:linear-gradient(90deg,var(--b),var(--r),var(--y));transition:width .3s}
+
+.map{display:grid;grid-template-columns:repeat(auto-fill,minmax(46px,1fr));gap:6px;margin-top:10px;padding:12px;background:var(--s1);border:1px solid var(--line);border-radius:16px}
+.tile{height:44px;border-radius:12px;background:var(--s2);border:1px solid var(--line);font-weight:800;font-size:15px;color:var(--mut)}
+.tile.part{border:2px solid var(--r);color:var(--ink)}
+.tile.ok{background:var(--y);border-color:var(--y);color:#111}
+.tile.cur{outline:3px solid var(--ink);outline-offset:2px}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--mut);margin:8px 4px 0}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:4px;background:var(--s2);border:1px solid var(--line);vertical-align:-2px;margin-right:5px}
+.legend i.ok{background:var(--y);border-color:var(--y)}.legend i.part{border:2px solid var(--r)}
+
+/* Colores de puntuación (anillos de diana) */
+.v11{background:var(--y);color:#111}
+.v10{background:var(--r);color:#fff}
+.v8{background:var(--b);color:#fff}
+.v5{background:var(--k);color:#fff;box-shadow:inset 0 0 0 2px #50545d}
+.v0{background:var(--w);color:#111;box-shadow:inset 0 0 0 2px #c9c8bf}
+
+.ac{transition:border-color .2s}
+.ac.done{border-color:#ffd21f99}
+.ac.flash{animation:flash .9s}
+@keyframes flash{0%{box-shadow:0 0 0 0 #ffd21fcc}100%{box-shadow:0 0 0 16px #ffd21f00}}
+.ah{display:flex;align-items:flex-start;gap:10px}
+.an{flex:1;min-width:0}
+.nm{font-weight:800;font-size:17px;overflow-wrap:anywhere}
+.ct{font-size:12px;color:var(--mut);margin-top:2px}
+.at{text-align:right;flex:none}
+.at b{display:block;font-size:22px;line-height:1;font-weight:850}
+.at span{font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:.6px;font-weight:700}
+.row2{display:flex;align-items:center;gap:10px;margin-top:12px}
+.slot{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;font-size:20px;font-weight:850;flex:none;position:relative}
+.slot:not(.empty)::after{content:"";position:absolute;inset:5px;border-radius:50%;border:1.5px solid #0000002e}
+.slot.v5::after{border-color:#ffffff26}
+.slot.empty{border:2px dashed var(--s3);color:var(--mut);font-size:13px;font-weight:700}
+.slot.sel{outline:3px solid var(--ink);outline-offset:3px;animation:pulse 1s infinite alternate}
+@keyframes pulse{to{outline-offset:6px}}
+.tsum{margin-left:4px}
+.tsum b{font-size:28px;font-weight:900;line-height:1}
+.tsum span{display:block;font-size:11px;color:var(--mut)}
+.clr{margin-left:auto;width:42px;height:42px;border-radius:12px;background:var(--s2);border:1px solid var(--line);color:var(--mut);font-size:15px}
+.pad{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:12px}
+.sb{height:60px;border-radius:15px;font-size:23px;font-weight:900;position:relative;transition:transform .07s}
+.sb::after{content:"";position:absolute;inset:6px;border-radius:11px;border:1.5px solid #0000002b;pointer-events:none}
+.sb.v5::after{border-color:#ffffff22}
+.sb:active{transform:scale(.92)}
+.ac.shake{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.hint{font-size:12.5px;color:var(--acc);font-weight:700;margin-top:8px;text-align:center}
+
+.nextbar{position:fixed;left:12px;right:12px;bottom:calc(76px + env(safe-area-inset-bottom));z-index:25;max-width:736px;margin:auto;display:flex;align-items:center;gap:10px;padding:10px 10px 10px 16px;border-radius:16px;background:var(--y);color:#111;font-weight:850;box-shadow:0 8px 30px #0008;animation:up .3s both}
+.nextbar button{margin-left:auto;background:#111;color:var(--y);padding:11px 14px;border-radius:12px;font-weight:850;white-space:nowrap}
+@keyframes up{from{transform:translateY(30px);opacity:0}}
+.fab{position:fixed;right:14px;bottom:calc(78px + env(safe-area-inset-bottom));z-index:24;display:flex;align-items:center;gap:6px;padding:11px 15px;border-radius:99px;background:var(--s2);border:1px solid var(--line);box-shadow:var(--shadow);font-weight:800;font-size:14px}
+.fab.up{bottom:calc(146px + env(safe-area-inset-bottom))}
+
+/* Pestañas */
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--bar);border-top:1px solid var(--line);padding:6px 6px calc(6px + env(safe-area-inset-bottom))}
+.tabs .in{display:grid;grid-template-columns:repeat(4,1fr);max-width:760px;margin:auto}
+.tabs button{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0;border-radius:12px;color:var(--mut);font-size:11px;font-weight:750}
+.tabs svg{width:24px;height:24px}
+.tabs button.on{color:var(--ink)}
+.tabs button.on svg{color:var(--acc)}
+
+/* Clasificación */
+.seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:4px;background:var(--s1);border:1px solid var(--line);border-radius:14px;padding:4px}
+.seg button{padding:10px 6px;border-radius:10px;font-weight:800;font-size:14px;color:var(--mut)}
+.seg button.on{background:var(--prim);color:var(--primInk)}
+.podium{display:grid;grid-template-columns:1fr 1.12fr 1fr;align-items:end;gap:8px;margin:14px 0 6px}
+.pod{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0}
+.pod .pn{font-weight:800;font-size:13.5px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 2px}
+.pod .pp{font-size:21px;font-weight:900}
+.pod .pn,.pod .pp,.pod .medal{animation:fade .45s both;animation-delay:calc(var(--d) + .45s)}
+.medal{font-size:26px;line-height:1}
+.blk{width:100%;border-radius:14px 14px 4px 4px;display:grid;place-items:start center;padding-top:8px;font-weight:900;font-size:28px;color:#111;transform-origin:bottom;animation:rise .7s cubic-bezier(.2,.9,.3,1.15) both;animation-delay:var(--d);background-image:radial-gradient(circle at 50% 120%,transparent 0 20px,#0000000f 20px 24px,transparent 24px 40px,#0000000f 40px 44px,transparent 44px)}
+.p1 .blk{height:112px}.p2 .blk{height:82px}.p3 .blk{height:62px}
+.mini .p1 .blk{height:70px}.mini .p2 .blk{height:52px}.mini .p3 .blk{height:40px;font-size:22px}
+.gold .blk{background-color:#ffd21f}.silver .blk{background-color:#c9cdd5}.bronze .blk{background-color:#d08a4c}
+@keyframes rise{from{transform:scaleY(0)}}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}}
+.tw{overflow-x:auto;margin:6px -4px 0}
+.rt{width:100%;border-collapse:collapse;font-size:14px}
+.rt th{font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--mut);font-weight:800;padding:6px 6px;text-align:right;border-bottom:1px solid var(--line)}
+.rt td{padding:9px 6px;border-bottom:1px solid var(--line);text-align:right;vertical-align:middle}
+.rt th:nth-child(2),.rt td:nth-child(2){text-align:left;width:100%}
+.rt th:first-child,.rt td:first-child{text-align:center;width:40px}
+.rt tr[data-stat]{cursor:pointer}
+.rt tr[data-stat]:active{background:var(--s2)}
+.rk{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--s2);font-weight:850;font-size:13px}
+.rk.r1{background:#ffd21f;color:#111}.rk.r2{background:#c9cdd5;color:#111}.rk.r3{background:#d08a4c;color:#111}
+.tn{font-weight:750}.tc{font-size:11.5px;color:var(--mut);margin-top:1px}
+.tp{font-weight:900;font-size:17px}
+.tag{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:99px;background:var(--s2);border:1px solid var(--line);font-size:10.5px;font-weight:800;color:var(--mut);vertical-align:1px}
+.catsec h3{display:flex;align-items:center;gap:8px;font-size:15px}
+.catsec h3::before{content:"";width:12px;height:12px;border-radius:50%;background:radial-gradient(circle,var(--y) 0 30%,var(--r) 31% 55%,var(--b) 56% 80%,#fff 81%);flex:none}
+
+/* Listas */
+.li{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--line)}
+.li:last-child{border-bottom:0}
+.av{width:40px;height:40px;border-radius:50%;flex:none;display:grid;place-items:center;font-weight:850;font-size:14px;color:#111}
+.lt{flex:1;min-width:0}.lt b{display:block;overflow-wrap:anywhere}.lt span{font-size:12px;color:var(--mut)}
+.mini-btn{width:38px;height:38px;border-radius:11px;background:var(--s2);border:1px solid var(--line);display:grid;place-items:center;font-size:15px;color:var(--mut);flex:none}
+.jc .top{display:flex;align-items:flex-start;gap:10px}
+.jc .top>div{flex:1;min-width:0}
+.badge{display:inline-block;padding:3px 9px;border-radius:99px;background:var(--y);color:#111;font-size:11px;font-weight:850}
+.jc .meta{font-size:12.5px;color:var(--mut);margin-top:3px}
+.jc .lead{margin-top:10px;font-size:13.5px}
+.jc .acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+
+/* Formularios */
+.fld{display:block;margin-top:12px}
+.fld>span{display:block;font-size:11.5px;font-weight:800;color:var(--mut);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.in{width:100%;min-height:48px;padding:11px 12px;border-radius:12px;border:1px solid var(--line);background:var(--s2);font-size:16px;-webkit-appearance:none;appearance:none}
+select.in{background-image:linear-gradient(45deg,transparent 50%,var(--mut) 50%),linear-gradient(135deg,var(--mut) 50%,transparent 50%);background-position:calc(100% - 18px) 21px,calc(100% - 13px) 21px;background-size:5px 5px;background-repeat:no-repeat;padding-right:34px}
+textarea.in{min-height:96px;resize:vertical;font-size:14px;font-family:ui-monospace,Menlo,Consolas,monospace}
+.segr{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:4px;background:var(--s2);border:1px solid var(--line);border-radius:12px;padding:4px}
+.segr label{position:relative}
+.segr input{position:absolute;opacity:0;pointer-events:none}
+.segr span{display:block;text-align:center;padding:10px 4px;border-radius:9px;font-weight:750;font-size:14px;color:var(--mut)}
+.segr input:checked+span{background:var(--prim);color:var(--primInk)}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.chips{display:flex;gap:6px;margin-bottom:8px}
+.chips button{padding:8px 16px;border-radius:99px;background:var(--s2);border:1px solid var(--line);font-weight:800}
+.chips button.on{background:var(--prim);color:var(--primInk);border-color:transparent}
+.sw{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.sw div{flex:1}.sw small{display:block;color:var(--mut);font-size:12px;margin-top:2px}
+.sw input{appearance:none;-webkit-appearance:none;width:50px;height:30px;border-radius:99px;background:var(--s3);position:relative;flex:none;transition:background .2s;cursor:pointer}
+.sw input::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 1px 3px #0005}
+.sw input:checked{background:#1fa855}.sw input:checked::after{transform:translateX(20px)}
+
+/* Hojas (ventanas) */
+.sheetwrap{position:fixed;inset:0;z-index:50;display:flex;align-items:flex-end;justify-content:center}
+.scrim{position:absolute;inset:0;background:#000b;opacity:0;transition:opacity .2s}
+.sheet{position:relative;width:100%;max-width:640px;max-height:92vh;overflow:auto;-webkit-overflow-scrolling:touch;background:var(--s1);border:1px solid var(--line);border-bottom:0;border-radius:22px 22px 0 0;padding:6px 16px calc(22px + env(safe-area-inset-bottom));transform:translateY(100%);transition:transform .26s cubic-bezier(.2,.8,.2,1)}
+.open .scrim{opacity:1}.open .sheet{transform:none}
+.grab{width:42px;height:5px;border-radius:9px;background:var(--s3);margin:6px auto 12px}
+.shead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px}
+.x{width:38px;height:38px;border-radius:50%;background:var(--s2);font-size:18px;color:var(--mut);flex:none}
+.sheet h4{margin:20px 0 4px;font-size:12px;text-transform:uppercase;letter-spacing:.6px;color:var(--mut)}
+
+/* Estadísticas */
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.kpi{background:var(--s2);border:1px solid var(--line);border-radius:14px;padding:10px 8px;text-align:center}
+.kpi b{display:block;font-size:21px;font-weight:900;line-height:1.1}
+.kpi span{font-size:11px;color:var(--mut);font-weight:650}
+.dist{display:flex;height:22px;border-radius:8px;overflow:hidden;margin-top:8px;background:var(--s2)}
+.dist i{display:block;height:100%}
+.dlist{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:8px}
+.dlist div{text-align:center;font-size:12px;color:var(--mut)}
+.dlist b{display:grid;place-items:center;height:34px;border-radius:50%;width:34px;margin:0 auto 4px;font-size:13px}
+.chart{width:100%;height:auto;display:block;margin-top:6px}
+
+/* Comparación */
+.diff{border:1px solid var(--line);border-radius:14px;padding:10px;margin-top:8px;background:var(--s2)}
+.diff .dh{display:flex;justify-content:space-between;font-weight:800;font-size:14px}
+.pairs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.pairs button{border-radius:12px;padding:8px;border:2px solid var(--line);background:var(--s1);text-align:left}
+.pairs button small{display:block;font-size:11px;color:var(--mut);font-weight:700;margin-bottom:5px}
+.pairs .dots{display:flex;align-items:center;gap:5px;font-weight:850}
+.dot{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:850}
+.dot.e{border:2px dashed var(--s3);color:var(--mut)}
+.okbox{text-align:center;padding:20px 10px}
+.okbox .big{font-size:54px}
+.note{font-size:12.5px;color:var(--mut);background:var(--s2);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-top:10px;line-height:1.45}
+.preview{white-space:pre-wrap;font-size:13px;background:var(--s2);border:1px solid var(--line);border-radius:12px;padding:12px;max-height:220px;overflow:auto;line-height:1.45;overflow-wrap:anywhere}
+.imgprev{width:100%;border-radius:12px;border:1px solid var(--line);margin-top:8px}
+.install{display:flex;gap:12px;align-items:center}
+.install img{width:52px;height:52px;border-radius:12px;flex:none}
+
+#toast{position:fixed;left:50%;bottom:calc(150px + env(safe-area-inset-bottom));transform:translate(-50%,20px);z-index:80;background:var(--ink);color:var(--bg);padding:11px 16px;border-radius:12px;font-weight:700;font-size:14px;opacity:0;pointer-events:none;transition:.22s;max-width:90vw;text-align:center;box-shadow:0 8px 24px #0006}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+@media (min-width:600px){.pad .sb{height:64px}.kpis{grid-template-columns:repeat(4,1fr)}}
+@media (max-width:360px){.slot{width:48px;height:48px}.sb{height:54px;font-size:20px}.tnum b{font-size:28px}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header class="appbar" id="appbar">
+  <svg class="rings" viewBox="0 0 200 200" aria-hidden="true"><g fill="none" stroke-width="9"><circle cx="100" cy="100" r="92" stroke="#f7f7f2"/><circle cx="100" cy="100" r="74" stroke="#5a5f6a"/><circle cx="100" cy="100" r="56" stroke="#1f7fe0"/><circle cx="100" cy="100" r="38" stroke="#e3262e"/><circle cx="100" cy="100" r="20" stroke="#ffd21f"/></g></svg>
+  <div class="in">
+    <svg class="logo" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="49" fill="#f7f7f2"/><circle cx="50" cy="50" r="39" fill="#111"/><circle cx="50" cy="50" r="29.5" fill="#1f7fe0"/><circle cx="50" cy="50" r="20" fill="#e3262e"/><circle cx="50" cy="50" r="10.5" fill="#ffd21f"/></svg>
+    <div class="ttl"><h1>Recorrido 3D</h1><p id="sub"></p></div>
+    <button class="iconbtn" data-act="settings" aria-label="Ajustes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg></button>
+  </div>
+</header>
+<main id="main"></main>
+<nav class="tabs" id="tabs"><div class="in">
+  <button data-tab="score"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9.5"/><circle cx="12" cy="12" r="5.5"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/></svg><span>Puntuar</span></button>
+  <button data-tab="rank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4zM7 6H4v1.5A3.5 3.5 0 0 0 7.5 11M17 6h3v1.5a3.5 3.5 0 0 1-3.5 3.5"/></svg><span>Clasificación</span></button>
+  <button data-tab="archers"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg><span>Tiradores</span></button>
+  <button data-tab="jornadas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4.5" width="18" height="17" rx="2.5"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/></svg><span>Jornadas</span></button>
+</div></nav>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(()=>{'use strict';
+const KEY='recorrido3d_v1', APPVER='1.0.0';
+const VALUES=[11,10,8,5,0];
+const ENC={11:'E',10:'T',8:'8',5:'5',0:'0'}, DEC={E:11,T:10,'8':8,'5':5,'0':0};
+const DEF_MODS=['Compuesto','Arco desnudo','Instintivo','Longbow','Tradicional','Recurvo'];
+const DEF_AGES=['Infantil','Cadete','Júnior','Sénior','Veterano'];
+const SEXES=['Masculino','Femenino'];
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=()=>(crypto.randomUUID?crypto.randomUUID().replace(/-/g,''):Date.now().toString(36)+Math.random().toString(36).slice(2)).slice(0,12);
+const ok=v=>VALUES.includes(v);
+const nrm=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/\s+/g,' ').trim();
+const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+const fmtDate=iso=>{const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(iso||'');return m?`${m[3]}/${m[2]}/${m[1]}`:(iso||'')};
+const isTouch=matchMedia('(pointer:coarse)').matches;
+const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+const isStandalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+
+/* ---------- Datos ---------- */
+function clampN(n){n=parseInt(n,10);return n>=1&&n<=99?n:24}
+function sortPair(s){const v=(s||[]).filter(ok).sort((a,b)=>b-a);return [v[0]??null,v[1]??null]}
+function fixA(a,n){return {id:String(a.id||uid()),name:String(a.name||'Tirador').slice(0,70),mod:String(a.mod||''),sex:String(a.sex||''),age:String(a.age||''),club:String(a.club||''),patrol:String(a.patrol??''),own:a.own!==false,
+  scores:Array.from({length:n},(_,i)=>{const s=a.scores?.[i]||[];return sortPair([s[0],s[1]])})}}
+function fixJ(j){j.id=String(j.id||uid());j.name=String(j.name||'Jornada');j.date=j.date||today();j.n=clampN(j.n);j.patrol=String(j.patrol??'');j.cur=Math.min(j.n,Math.max(1,parseInt(j.cur,10)||1));j.archers=(j.archers||[]).map(a=>fixA(a,j.n));j.created=j.created||Date.now();return j}
+function load(){let d=null;try{d=JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){}
+  if(!d||!Array.isArray(d.jornadas))d={jornadas:[],activeId:null,settings:{}};
+  d.settings=Object.assign({theme:'dark',vibrate:true,wake:true,advance:true,scorer:'',mods:DEF_MODS.slice(),ages:DEF_AGES.slice(),last:{}},d.settings||{});
+  d.jornadas=d.jornadas.map(fixJ);
+  if(!d.jornadas.some(j=>j.id===d.activeId))d.activeId=d.jornadas[0]?.id||null;
+  return d}
+let db=load();
+function save(){try{const j=J();if(j)j.updated=Date.now();localStorage.setItem(KEY,JSON.stringify(db))}catch(e){toast('⚠️ No se pudo guardar en el móvil')}}
+const J=()=>db.jornadas.find(j=>j.id===db.activeId)||null;
+const ownA=j=>j.archers.filter(a=>a.own);
+
+const pts=s=>(s[0]??0)+(s[1]??0);
+const full=s=>s[0]!=null&&s[1]!=null;
+const tot=a=>a.scores.reduce((t,s)=>t+pts(s),0);
+const nArrows=a=>a.scores.reduce((t,s)=>t+(s[0]!=null)+(s[1]!=null),0);
+const cnt=(a,v)=>a.scores.reduce((t,s)=>t+(s[0]===v)+(s[1]===v),0);
+const doneT=a=>a.scores.filter(full).length;
+const sexShort=s=>s==='Masculino'?'Masc.':s==='Femenino'?'Fem.':s;
+const catOf=a=>[a.mod,sexShort(a.sex),a.age].filter(Boolean).join(' · ')||'Sin categoría';
+function cmp(a,b){return tot(b)-tot(a)||cnt(b,11)-cnt(a,11)||cnt(b,10)-cnt(a,10)}
+function ranked(list){const s=[...list].sort((a,b)=>cmp(a,b)||a.name.localeCompare(b.name,'es'));let pos=0;return s.map((a,i)=>{if(i===0||cmp(s[i-1],a)!==0)pos=i+1;return {a,pos}})}
+function groups(list){const m=new Map();list.forEach(a=>{const k=catOf(a);if(!m.has(k))m.set(k,[]);m.get(k).push(a)});const S=db.settings,ix=(arr,v)=>{const i=arr.indexOf(v);return i<0?99:i};
+  return [...m.entries()].sort((x,y)=>{const a=x[1][0],b=y[1][0];return ix(S.mods,a.mod)-ix(S.mods,b.mod)||ix(SEXES,a.sex)-ix(SEXES,b.sex)||ix(S.ages,a.age)-ix(S.ages,b.age)||x[0].localeCompare(y[0],'es')})}
+const avColor=a=>({Compuesto:'#ffd21f','Arco desnudo':'#e3262e',Instintivo:'#1f7fe0',Longbow:'#f7f7f2',Tradicional:'#c9cdd5',Recurvo:'#d08a4c'}[a.mod]||'#9aa0aa');
+const initials=n=>n.split(/\s+/).filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase();
+
+/* ---------- Estado de interfaz ---------- */
+let view=J()?'score':'jornadas', mapOpen=false, editSlot=null, rankMode='general', undo=[], deferredPrompt=null;
+
+/* ---------- Utilidades UI ---------- */
+function toast(m,ms=2300){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),ms)}
+function buzz(p){if(db.settings.vibrate&&navigator.vibrate)try{navigator.vibrate(p)}catch(e){}}
+function sheet(html,onMount){closeSheet(true);const w=document.createElement('div');w.className='sheetwrap';
+  w.innerHTML=`<div class="scrim" data-close></div><div class="sheet" role="dialog" aria-modal="true"><div class="grab"></div>${html}</div>`;
+  document.body.appendChild(w);document.body.classList.add('noscroll');requestAnimationFrame(()=>requestAnimationFrame(()=>w.classList.add('open')));
+  w.addEventListener('click',e=>{if(e.target.closest('[data-close]'))closeSheet()});
+  const s=$('.sheet',w);onMount&&onMount(s);return s}
+function closeSheet(instant){$$('.sheetwrap:not(.closing)').forEach(w=>{w.classList.add('closing');w.classList.remove('open');setTimeout(()=>w.remove(),instant?0:240)});document.body.classList.remove('noscroll')}
+const shead=t=>`<div class="shead"><h2>${t}</h2><button class="x" data-close aria-label="Cerrar">✕</button></div>`;
+function ask(msg,okText='Aceptar',danger=false){return new Promise(res=>{let done=false;const s=sheet(`${shead('¿Seguro?')}<p class="mut" style="font-size:15px">${msg}</p><div class="grid2" style="margin-top:16px"><button class="btn" data-no>Cancelar</button><button class="btn ${danger?'danger':'prim'}" data-yes>${okText}</button></div>`);
+  s.addEventListener('click',e=>{if(e.target.closest('[data-yes]')){done=true;closeSheet();res(true)}else if(e.target.closest('[data-no]')){done=true;closeSheet();res(false)}});
+  const w=s.parentElement;new MutationObserver((_,o)=>{if(!document.body.contains(w)){o.disconnect();if(!done)res(false)}}).observe(document.body,{childList:true})})}
+function empty(title,text,btn=''){return `<div class="card empty">${bigTarget()}<b>${title}</b><div class="mut">${text}</div>${btn}</div>`}
+function bigTarget(){return `<svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="48" fill="#f7f7f2"/><circle cx="50" cy="50" r="38.5" fill="#111" stroke="#444" stroke-width="1"/><circle cx="50" cy="50" r="29" fill="#1f7fe0"/><circle cx="50" cy="50" r="19.5" fill="#e3262e"/><circle cx="50" cy="50" r="10" fill="#ffd21f"/><circle cx="50" cy="50" r="3.5" fill="none" stroke="#a57f00" stroke-width="1"/></svg>`}
+const optList=(arr,sel)=>`<option value="">— Elegir —</option>`+[...new Set([...arr,...(sel&&!arr.includes(sel)?[sel]:[])])].map(v=>`<option ${v===sel?'selected':''}>${esc(v)}</option>`).join('');
+
+function applyTheme(){const t=db.settings.theme;const dark=t==='dark'||(t==='auto'&&matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.dataset.theme=dark?'dark':'light';$('meta[name=theme-color]').content=dark?'#111316':'#ffffff'}
+matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change',applyTheme);
+function setAbh(){document.documentElement.style.setProperty('--abh',$('#appbar').offsetHeight+'px')}
+
+/* ---------- Pantalla siempre encendida ---------- */
+let wl=null;
+async function wake(){try{const want=view==='score'&&db.settings.wake&&document.visibilityState==='visible'&&!!J();
+  if(want&&!wl&&'wakeLock' in navigator){wl=await navigator.wakeLock.request('screen');wl.addEventListener('release',()=>{wl=null})}
+  else if(!want&&wl){await wl.release();wl=null}}catch(e){}}
+document.addEventListener('visibilitychange',wake);
+
+/* ---------- Render ---------- */
+function render(){const j=J();
+  $('#sub').textContent=j?`${j.name} · ${j.n} dianas${j.patrol?' · Patrulla '+j.patrol:''}`:'Crea una jornada para empezar';
+  $$('#tabs [data-tab]').forEach(b=>{b.classList.toggle('on',b.dataset.tab===view);b.setAttribute('aria-current',b.dataset.tab===view?'page':'false')});
+  let h;
+  if(view==='jornadas')h=vJornadas();
+  else if(!j)h=empty('No hay ninguna jornada activa','Crea una jornada nueva o importa la patrulla que te ha enviado el otro anotador.','<div class="stack" style="margin-top:16px"><button class="btn prim" data-act="newJ">＋ Nueva jornada</button><button class="btn" data-act="import">📥 Importar patrulla de WhatsApp</button></div>');
+  else h={score:vScore,rank:vRank,archers:vArchers}[view](j);
+  $('#main').innerHTML=h;wake()}
+function go(v){view=v;editSlot=null;render();scrollTo({top:0})}
+
+/* ===== PUNTUAR ===== */
+function vScore(j){const own=ownA(j);
+  if(!own.length)return empty('Añade los tiradores de tu patrulla','Después podrás anotar sus dos flechas en cada diana.','<button class="btn prim" data-tab="archers">Añadir tiradores</button>');
+  const i=j.cur-1,allDone=own.every(a=>full(a.scores[i]));
+  const complete=Array.from({length:j.n},(_,k)=>own.every(a=>full(a.scores[k]))).filter(Boolean).length;
+  return `<div class="tbar">
+    <button class="nav" data-act="prev" ${j.cur<=1?'disabled':''} aria-label="Diana anterior">‹</button>
+    <button class="tnum" data-act="map" aria-expanded="${mapOpen}" aria-label="Diana ${j.cur} de ${j.n}. Mostrar mapa de dianas"><small>DIANA</small><b>${j.cur}</b><span>de ${j.n} ${mapOpen?'▴':'▾'}</span></button>
+    <button class="nav" data-act="next" ${j.cur>=j.n?'disabled':''} aria-label="Diana siguiente">›</button>
+  </div>
+  <div class="prog" title="${complete} de ${j.n} dianas completas"><i style="width:${complete/j.n*100}%"></i></div>
+  ${mapOpen?mapHtml(j):''}
+  ${own.map(a=>cardHtml(a,i)).join('')}
+  <button class="btn wide" style="margin-top:14px;color:var(--mut)" data-act="clearT">Borrar puntuaciones de la diana ${j.cur}</button>
+  ${allDone?`<div class="nextbar"><span>✓ Diana ${j.cur} completa</span><button data-act="${j.cur<j.n?'next':'gorank'}">${j.cur<j.n?`Diana ${j.cur+1} ›`:'Ver clasificación ›'}</button></div>`:''}
+  ${undo.length?`<button class="fab ${allDone?'up':''}" data-act="undo">↶ Deshacer</button>`:''}`}
+function mapHtml(j){const own=ownA(j);
+  return `<div class="map">${Array.from({length:j.n},(_,i)=>{const c=own.filter(a=>full(a.scores[i])).length,p=own.some(a=>a.scores[i][0]!=null);const st=c===own.length?'ok':p?'part':'';
+    return `<button class="tile ${st} ${i+1===j.cur?'cur':''}" data-t="${i+1}" aria-label="Diana ${i+1}">${i+1}</button>`}).join('')}</div>
+  <div class="legend"><span><i class="ok"></i>Completa</span><span><i class="part"></i>A medias</span><span><i></i>Pendiente</span></div>`}
+function cardHtml(a,i){const s=a.scores[i],es=editSlot&&editSlot.aid===a.id?editSlot.slot:-1;
+  const slot=k=>s[k]==null?`<button class="slot empty" data-slot="${k}" aria-label="Flecha ${k+1} sin anotar">${k+1}ª</button>`
+    :`<button class="slot v${s[k]} ${es===k?'sel':''}" data-slot="${k}" aria-label="Flecha ${k+1}: ${s[k]}. Tocar para corregir">${s[k]}</button>`;
+  return `<article class="card ac ${full(s)?'done':''}" data-aid="${esc(a.id)}">
+    <div class="ah"><div class="an"><div class="nm">${esc(a.name)}</div><div class="ct">${esc(catOf(a))}</div></div><div class="at"><b>${tot(a)}</b><span>Total</span></div></div>
+    <div class="row2">${slot(0)}${slot(1)}<div class="tsum"><b>${pts(s)}</b><span>esta diana</span></div>${s[0]!=null?`<button class="clr" data-clra aria-label="Borrar flechas de ${esc(a.name)} en esta diana">✕</button>`:''}</div>
+    <div class="pad">${VALUES.map(v=>`<button class="sb v${v}" data-v="${v}" aria-label="${v} puntos">${v}</button>`).join('')}</div>
+    ${es>=0?'<div class="hint">Elige el valor correcto para la flecha marcada</div>':''}
+  </article>`}
+function pushUndo(items){const j=J();undo.push({j:j.id,t:j.cur,items});if(undo.length>60)undo.shift()}
+function setScore(aid,v){const j=J(),a=j.archers.find(x=>x.id===aid);if(!a)return;const i=j.cur-1,prev=a.scores[i].slice(),s=prev.slice(),was=full(prev);
+  if(editSlot&&editSlot.aid===aid){s[editSlot.slot]=v;editSlot=null}
+  else if(s[0]==null)s[0]=v;else if(s[1]==null)s[1]=v;
+  else{buzz([30,40,30]);toast('Ya tiene 2 flechas. Toca una flecha para corregirla');const el=$(`.ac[data-aid="${CSS.escape(aid)}"]`);el&&(el.classList.remove('shake'),void el.offsetWidth,el.classList.add('shake'));return}
+  const ns=sortPair(s);if(ns[0]===prev[0]&&ns[1]===prev[1]){render();return}
+  pushUndo([{aid,i,prev}]);a.scores[i]=ns;buzz(14);save();render();
+  if(!was&&full(ns))advanceFrom(aid)}
+function slotTap(aid,k){const a=J().archers.find(x=>x.id===aid);if(!a||a.scores[J().cur-1][k]==null)return;
+  editSlot=(editSlot&&editSlot.aid===aid&&editSlot.slot===k)?null:{aid,slot:k};render()}
+function advanceFrom(aid){const j=J(),own=ownA(j),i=j.cur-1,idx=own.findIndex(a=>a.id===aid);
+  if(own.every(a=>full(a.scores[i]))){buzz([20,60,30]);return}
+  if(!db.settings.advance)return;
+  const nx=[...own.slice(idx+1),...own.slice(0,idx)].find(a=>!full(a.scores[i]));
+  if(nx){const el=$(`.ac[data-aid="${CSS.escape(nx.id)}"]`);if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),950)}}}
+function clearArcher(aid){const j=J(),a=j.archers.find(x=>x.id===aid),i=j.cur-1;if(!a)return;pushUndo([{aid,i,prev:a.scores[i].slice()}]);a.scores[i]=[null,null];editSlot=null;save();render();toast('Flechas borradas · puedes deshacer')}
+async function clearT(){const j=J();if(!(await ask(`Se borrarán las flechas de todos los tiradores de tu patrulla en la diana ${j.cur}.`,'Borrar',true)))return;
+  const i=j.cur-1;pushUndo(ownA(j).map(a=>({aid:a.id,i,prev:a.scores[i].slice()})));ownA(j).forEach(a=>a.scores[i]=[null,null]);save();render();toast('Diana borrada · puedes deshacer')}
+function doUndo(){const u=undo.pop();if(!u)return;const j=db.jornadas.find(x=>x.id===u.j);if(!j){render();return}
+  u.items.forEach(({aid,i,prev})=>{const a=j.archers.find(x=>x.id===aid);if(a&&a.scores[i])a.scores[i]=prev});
+  if(j.id===db.activeId)j.cur=u.t;editSlot=null;save();render();buzz(10);toast('Deshecho')}
+function goT(t){const j=J();t=Math.min(j.n,Math.max(1,t));if(t===j.cur)return;j.cur=t;editSlot=null;save();render();scrollTo({top:0,behavior:'smooth'})}
+
+/* ===== CLASIFICACIÓN ===== */
+function podium(r,mini){const top=r.slice(0,3);if(!top.length||!top.some(x=>nArrows(x.a)))return '';
+  const medal=p=>['gold','silver','bronze'][p-1]||'bronze',emo=p=>['🥇','🥈','🥉'][p-1]||'🏅';
+  return `<div class="podium ${mini?'mini':''}">${[1,0,2].map(k=>{const x=top[k];if(!x)return '<div></div>';
+    return `<button class="pod p${k+1} ${medal(x.pos)}" data-stat="${esc(x.a.id)}" style="--d:${[0.15,0,0.3][k]}s"><span class="medal">${emo(x.pos)}</span><span class="pn">${esc(x.a.name)}</span><span class="pp">${tot(x.a)}</span><span class="blk">${x.pos}</span></button>`}).join('')}</div>`}
+function table(r,j,showCat=true){return `<div class="tw"><table class="rt"><thead><tr><th>#</th><th>Tirador</th><th>Pts</th><th>11</th><th>10</th><th>Dianas</th></tr></thead><tbody>${r.map(({a,pos})=>
+  `<tr data-stat="${esc(a.id)}"><td><span class="rk ${pos<=3?'r'+pos:''}">${pos}</span></td><td><div class="tn">${esc(a.name)}${a.own?'':`<span class="tag">P${esc(a.patrol||'?')}</span>`}</div>${showCat?`<div class="tc">${esc(catOf(a))}</div>`:''}</td><td class="tp">${tot(a)}</td><td>${cnt(a,11)}</td><td>${cnt(a,10)}</td><td>${doneT(a)}/${j.n}</td></tr>`).join('')}</tbody></table></div>`}
+function vRank(j){const all=j.archers;
+  if(!all.length)return empty('Aún no hay clasificación','Añade tiradores o importa las patrullas para ver la clasificación.','<div class="grid2" style="margin-top:16px"><button class="btn prim" data-tab="archers">Añadir tiradores</button><button class="btn" data-act="import">Importar patrulla</button></div>');
+  const imp=all.filter(a=>!a.own).length;
+  let body='';
+  if(rankMode==='general'){const r=ranked(all);body=`<div class="card">${podium(r)}${table(r,j)}</div>`}
+  else body=groups(all).map(([c,l])=>{const r=ranked(l);return `<div class="card catsec"><h3>${esc(c)} <span class="count">${l.length}</span></h3>${podium(r,true)}${table(r,j,false)}</div>`}).join('');
+  return `<div class="seg" role="tablist"><button class="${rankMode==='general'?'on':''}" data-rm="general">General</button><button class="${rankMode==='cat'?'on':''}" data-rm="cat">Por categorías</button></div>
+  ${imp?`<div class="note">Incluye ${imp} tirador${imp>1?'es':''} de otras patrullas importados por WhatsApp.</div>`:''}
+  ${body}
+  <p class="mut" style="margin:10px 4px 0;font-size:12px">Desempate: más 11, después más 10. Toca un tirador para ver sus estadísticas.</p>
+  <div class="card"><h3>Compartir resultados</h3>
+    <div class="grid2" style="margin-top:10px"><button class="btn wa" data-act="waText">${WA_ICON} Texto</button><button class="btn" data-act="img">🖼️ Imagen</button></div>
+    <h3 style="margin-top:18px">Patrullas y comprobación</h3>
+    <p class="mut" style="margin:6px 0 10px">Envía tu patrulla al otro anotador para comprobar que coincidís, o al organizador para juntar todas las patrullas en una clasificación.</p>
+    <div class="grid2"><button class="btn wa" data-act="sendCode">${WA_ICON} Enviar patrulla</button><button class="btn" data-act="import">📥 Importar / comprobar</button></div>
+    <h3 style="margin-top:18px">Exportar</h3>
+    <div class="grid2" style="margin-top:10px"><button class="btn sm" data-act="csv">CSV clasificación</button><button class="btn sm" data-act="csv2">CSV detalle flechas</button></div>
+  </div>`}
+const WA_ICON='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.4.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3z"/></svg>';
+
+function statSheet(id){const j=J(),a=j?.archers.find(x=>x.id===id);if(!a)return;
+  const n=nArrows(a),done=doneT(a),T=tot(a),pg=ranked(j.archers).find(x=>x.a.id===id).pos,pc=ranked(j.archers.filter(x=>catOf(x)===catOf(a))).find(x=>x.a.id===id).pos;
+  const fullS=a.scores.map((s,i)=>({s,i})).filter(x=>full(x.s));
+  const avg=done?fullS.reduce((t,x)=>t+pts(x.s),0)/done:0;
+  let best=null;a.scores.forEach((s,i)=>{if(s[0]!=null&&(!best||pts(s)>best.p))best={p:pts(s),i}});
+  const pct=v=>n?Math.round(cnt(a,v)/n*100):0;
+  const W=340,H=150,bw=W/j.n,cols=p=>p>=21?'#ffd21f':p>=16?'#e3262e':p>=10?'#1f7fe0':p>0?'#8a8f99':'#5a5f6a';
+  const bars=a.scores.map((s,i)=>{if(s[0]==null)return `<rect x="${i*bw+bw*.15}" y="${H-22}" width="${bw*.7}" height="2" fill="var(--s3)"/>`;const h=Math.max(3,pts(s)/22*(H-34));return `<rect x="${i*bw+bw*.15}" y="${H-20-h}" width="${bw*.7}" height="${h}" rx="${Math.min(3,bw*.2)}" fill="${cols(pts(s))}"/>`}).join('');
+  const ay=H-20-avg/22*(H-34);
+  const ticks=[1,Math.ceil(j.n/2),j.n].filter((v,k,arr)=>arr.indexOf(v)===k).map(t=>`<text x="${(t-.5)*bw}" y="${H-4}" text-anchor="middle" font-size="10" fill="var(--mut)">${t}</text>`).join('');
+  sheet(`${shead(esc(a.name))}<div class="mut">${esc(catOf(a))}${a.club?' · '+esc(a.club):''}${a.own?'':' · Patrulla '+esc(a.patrol||'?')}</div>
+   <div class="kpis"><div class="kpi"><b>${T}</b><span>Puntos</span></div><div class="kpi"><b>${pg}º</b><span>General</span></div><div class="kpi"><b>${pc}º</b><span>Categoría</span></div>
+   <div class="kpi"><b>${avg.toFixed(1)}</b><span>Media / diana</span></div><div class="kpi"><b>${pct(11)}%</b><span>de 11</span></div><div class="kpi"><b>${pct(0)}%</b><span>Fallos (0)</span></div>
+   <div class="kpi"><b>${best?best.p:'–'}</b><span>Mejor diana${best?' (nº '+(best.i+1)+')':''}</span></div><div class="kpi"><b>${done}/${j.n}</b><span>Dianas</span></div></div>
+   <h4>Reparto de flechas (${n})</h4>
+   <div class="dist">${VALUES.map(v=>n&&cnt(a,v)?`<i class="v${v}" style="width:${cnt(a,v)/n*100}%"></i>`:'').join('')}</div>
+   <div class="dlist">${VALUES.map(v=>`<div><b class="v${v}">${v}</b>${cnt(a,v)} · ${pct(v)}%</div>`).join('')}</div>
+   <h4>Puntos por diana</h4>
+   <svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Puntos por diana">${[22,11].map(v=>`<line x1="0" x2="${W}" y1="${H-20-v/22*(H-34)}" y2="${H-20-v/22*(H-34)}" stroke="var(--line)"/><text x="${W}" y="${H-23-v/22*(H-34)}" text-anchor="end" font-size="9" fill="var(--mut)">${v}</text>`).join('')}${bars}${done?`<line x1="0" x2="${W}" y1="${ay}" y2="${ay}" stroke="var(--ink)" stroke-dasharray="4 4" opacity=".6"/>`:''}${ticks}</svg>
+   <p class="mut" style="font-size:12px;margin-top:6px">Línea discontinua: media por diana.</p>`)}
+
+/* ===== TIRADORES ===== */
+function archerFields(a={}){const S=db.settings,L=S.last||{};const mod=a.mod??L.mod??'',sex=a.sex??L.sex??'',age=a.age??L.age??'';
+  return `<label class="fld"><span>Nombre</span><input class="in" name="name" maxlength="70" required autocomplete="off" value="${esc(a.name||'')}" placeholder="Nombre y apellido"></label>
+  <label class="fld"><span>Modalidad</span><select class="in" name="mod">${optList(S.mods,mod)}</select></label>
+  <div class="fld"><span>Sexo</span><div class="segr">${SEXES.map(s=>`<label><input type="radio" name="sex" value="${s}" ${sex===s?'checked':''}><span>${s}</span></label>`).join('')}</div></div>
+  <div class="f2"><label class="fld"><span>Edad</span><select class="in" name="age">${optList(S.ages,age)}</select></label>
+  <label class="fld"><span>Club (opcional)</span><input class="in" name="club" maxlength="50" autocomplete="off" value="${esc(a.club||'')}"></label></div>`}
+function vArchers(j){const own=ownA(j),imp=j.archers.filter(a=>!a.own);
+  const item=(a,k,isOwn)=>`<div class="li"><span class="av" style="background:${avColor(a)}">${esc(initials(a.name))}</span><div class="lt"><b>${esc(a.name)}</b><span>${esc(catOf(a))}${a.club?' · '+esc(a.club):''}${isOwn?'':' · Patrulla '+esc(a.patrol||'?')}</span></div>
+    ${isOwn&&k>0?`<button class="mini-btn" data-up="${esc(a.id)}" aria-label="Subir en el orden de tiro">↑</button>`:''}<button class="mini-btn" data-edita="${esc(a.id)}" aria-label="Editar ${esc(a.name)}">✎</button><button class="mini-btn" data-dela="${esc(a.id)}" aria-label="Eliminar ${esc(a.name)}" style="color:var(--r)">✕</button></div>`;
+  return `<form class="card" id="addA" autocomplete="off"><h2>Añadir tirador</h2>${archerFields()}<button class="btn prim wide" style="margin-top:14px" type="submit">＋ Añadir a la patrulla</button></form>
+  <div class="sechead"><h2>Mi patrulla${j.patrol?' '+esc(j.patrol):''}</h2><span class="count">${own.length}</span></div>
+  <div class="card">${own.length?own.map((a,k)=>item(a,k,true)).join(''):'<div class="mut" style="text-align:center;padding:14px">Todavía no hay tiradores. El orden de la lista es el orden en que aparecen al puntuar.</div>'}</div>
+  ${own.length?`<button class="btn wa wide" style="margin-top:12px" data-act="sendCode">${WA_ICON} Pasar la patrulla al 2º anotador</button>
+  <p class="mut" style="margin:8px 4px 0;font-size:12px">El otro anotador pulsa “Importar” y elige “Crear jornada con estos tiradores”: así los dos tenéis la misma lista y podréis comprobar las puntuaciones.</p>`:''}
+  ${imp.length?`<div class="sechead"><h2>Otras patrullas</h2><span class="count">${imp.length}</span></div><div class="card">${imp.map(a=>item(a,0,false)).join('')}</div>`:''}`}
+function readArcherForm(f){const d=new FormData(f);return {name:String(d.get('name')||'').trim().slice(0,70),mod:d.get('mod')||'',sex:d.get('sex')||'',age:d.get('age')||'',club:String(d.get('club')||'').trim()}}
+function addArcher(f){const j=J(),v=readArcherForm(f);if(!v.name)return;
+  if(ownA(j).some(a=>nrm(a.name)===nrm(v.name)))toast('Ojo: ya hay un tirador con ese nombre');
+  j.archers.push(fixA({...v,id:uid(),patrol:j.patrol,own:true},j.n));db.settings.last={mod:v.mod,sex:v.sex,age:v.age};save();render();toast(`${v.name} añadido`);
+  const inp=$('#addA [name=name]');inp&&inp.focus()}
+function editArcherSheet(id){const j=J(),a=j.archers.find(x=>x.id===id);if(!a)return;
+  sheet(`${shead('Editar tirador')}<form id="editA">${archerFields(a)}<button class="btn prim wide" style="margin-top:16px" type="submit">Guardar cambios</button></form>`,s=>{
+    $('form',s).addEventListener('submit',e=>{e.preventDefault();const v=readArcherForm(e.target);if(!v.name)return;Object.assign(a,v);save();closeSheet();render();toast('Cambios guardados')})})}
+async function delArcher(id){const j=J(),a=j.archers.find(x=>x.id===id);if(!a)return;
+  if(!(await ask(`Se eliminará a <b>${esc(a.name)}</b> y todas sus puntuaciones de esta jornada.`,'Eliminar',true)))return;
+  j.archers=j.archers.filter(x=>x.id!==id);undo=undo.filter(u=>!u.items.some(it=>it.aid===id));save();render()}
+function moveUp(id){const j=J(),own=ownA(j),k=own.findIndex(a=>a.id===id);if(k<1)return;const A=j.archers,ia=A.indexOf(own[k]),ib=A.indexOf(own[k-1]);[A[ia],A[ib]]=[A[ib],A[ia]];save();render()}
+
+/* ===== JORNADAS ===== */
+function installCard(){if(isStandalone()||db.settings.hideInstall)return '';
+  if(deferredPrompt)return `<div class="card install"><img src="icons/icon-192.png" alt=""><div style="flex:1"><b>Instala Recorrido 3D</b><div class="mut">Tenla en tu pantalla de inicio y úsala sin conexión.</div></div><button class="btn prim sm" data-act="install">Instalar</button></div>`;
+  if(isIOS)return `<div class="card install"><img src="icons/icon-192.png" alt=""><div style="flex:1"><b>Instálala en tu iPhone</b><div class="mut">En Safari, pulsa <b>Compartir</b> (□↑) y después <b>“Añadir a pantalla de inicio”</b>.</div></div><button class="x" data-act="hideInstall" aria-label="Ocultar">✕</button></div>`;
+  return ''}
+function vJornadas(){const list=[...db.jornadas].sort((a,b)=>(b.date||'').localeCompare(a.date||'')||b.created-a.created);
+  return `${installCard()}
+  <button class="btn prim wide" style="margin-top:12px;min-height:54px;font-size:16px" data-act="newJ">＋ Nueva jornada</button>
+  <button class="btn wide" style="margin-top:8px" data-act="import">📥 Importar patrulla de WhatsApp</button>
+  ${list.length?`<div class="sechead"><h2>Historial</h2><span class="count">${list.length}</span></div>`+list.map(j=>{const r=ranked(j.archers),L=r[0];const act=j.id===db.activeId;
+    const comp=ownA(j).length?Array.from({length:j.n},(_,k)=>ownA(j).every(a=>full(a.scores[k]))).filter(Boolean).length:0;
+    return `<div class="card jc"><div class="top"><div><h3>${esc(j.name)} ${act?'<span class="badge">ACTIVA</span>':''}</h3><div class="meta">📅 ${fmtDate(j.date)} · 🎯 ${j.n} dianas · 👥 ${j.archers.length} tiradores${j.patrol?' · Patrulla '+esc(j.patrol):''}</div></div></div>
+    <div class="lead">${L&&nArrows(L.a)?`🥇 <b>${esc(L.a.name)}</b> · ${tot(L.a)} pts · ${comp}/${j.n} dianas completas`:'<span class="mut">Sin puntuaciones todavía</span>'}</div>
+    <div class="acts">${act?`<button class="btn sm prim" data-tab="score">Puntuar</button>`:`<button class="btn sm prim" data-open="${j.id}">Abrir</button>`}<button class="btn sm" data-editj="${j.id}">Editar</button><button class="btn sm" data-dupj="${j.id}">Repetir tiradores</button><button class="btn sm danger" data-delj="${j.id}">Eliminar</button></div></div>`}).join('')
+  :empty('¡Bienvenido a Recorrido 3D!','Crea tu primera jornada: elige el número de dianas (24 por defecto), añade los tiradores de tu patrulla y empieza a puntuar.')}`}
+function jSheet(editId,copyFrom){const j=editId?db.jornadas.find(x=>x.id===editId):null;const src=copyFrom?db.jornadas.find(x=>x.id===copyFrom):null;
+  const n=j?j.n:(src?src.n:24);
+  sheet(`${shead(j?'Editar jornada':'Nueva jornada')}<form id="jForm">
+    <label class="fld"><span>Nombre</span><input class="in" name="name" required maxlength="60" value="${esc(j?j.name:(src?src.name:'Recorrido '+fmtDate(today())))}"></label>
+    <div class="f2"><label class="fld"><span>Fecha</span><input class="in" type="date" name="date" value="${esc(j?j.date:today())}"></label>
+    <label class="fld"><span>Patrulla</span><input class="in" name="patrol" maxlength="12" placeholder="Ej. 3" value="${esc(j?j.patrol:(src?src.patrol:''))}"></label></div>
+    <div class="fld"><span>Número de dianas</span><div class="chips">${[24,32].map(v=>`<button type="button" data-n="${v}" class="${n===v?'on':''}">${v}</button>`).join('')}<button type="button" data-n="" class="${n!==24&&n!==32?'on':''}">Otro</button></div>
+    <input class="in" type="number" name="n" min="1" max="99" inputmode="numeric" value="${n}" required></div>
+    ${src?`<div class="note">Se copiarán los ${ownA(src).length} tiradores de “${esc(src.name)}” sin puntuaciones.</div>`:''}
+    <button class="btn prim wide" style="margin-top:16px" type="submit">${j?'Guardar cambios':'Crear y empezar'}</button></form>`,s=>{
+    const inp=$('[name=n]',s);
+    s.addEventListener('click',e=>{const c=e.target.closest('[data-n]');if(!c)return;$$('.chips button',s).forEach(b=>b.classList.toggle('on',b===c));if(c.dataset.n)inp.value=c.dataset.n;else{inp.value='';inp.focus()}});
+    inp.addEventListener('input',()=>$$('.chips button',s).forEach(b=>b.classList.toggle('on',b.dataset.n===inp.value||(!b.dataset.n&&inp.value!=='24'&&inp.value!=='32'))));
+    $('form',s).addEventListener('submit',async e=>{e.preventDefault();const d=new FormData(e.target);const nn=parseInt(d.get('n'),10);
+      if(!(nn>=1&&nn<=99)){toast('El número de dianas debe estar entre 1 y 99');return}
+      const v={name:String(d.get('name')).trim()||'Jornada',date:d.get('date')||today(),patrol:String(d.get('patrol')||'').trim(),n:nn};
+      if(j){if(nn<j.n&&j.archers.some(a=>a.scores.slice(nn).some(s=>s[0]!=null))){if(!(await ask(`Hay flechas anotadas a partir de la diana ${nn+1}. Se perderán si reduces a ${nn} dianas.`,'Reducir',true)))return}
+        const oldP=j.patrol;Object.assign(j,v);j.archers=j.archers.map(a=>{if(a.own&&a.patrol===oldP)a.patrol=v.patrol;return fixA(a,nn)});j.cur=Math.min(j.cur,nn);undo=[];save();closeSheet();render();toast('Jornada actualizada')}
+      else{const nj=fixJ({...v,id:uid(),cur:1,archers:src?ownA(src).map(a=>({...a,id:uid(),patrol:v.patrol,scores:[]})):[]});db.jornadas.push(nj);db.activeId=nj.id;undo=[];save();closeSheet();go(nj.archers.length?'score':'archers');toast('Jornada creada')}})})}
+async function delJ(id){const j=db.jornadas.find(x=>x.id===id);if(!j)return;
+  if(!(await ask(`Se eliminará la jornada <b>${esc(j.name)}</b> con todos sus tiradores y puntuaciones. No se puede deshacer.`,'Eliminar',true)))return;
+  db.jornadas=db.jornadas.filter(x=>x.id!==id);if(db.activeId===id)db.activeId=null;undo=undo.filter(u=>u.j!==id);save();render()}
+
+/* ===== COMPARTIR ===== */
+function openWA(text){window.open('https://wa.me/?text='+encodeURIComponent(text),'_blank','noopener')}
+async function copyText(t){try{await navigator.clipboard.writeText(t);toast('Copiado')}catch(e){const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');toast('Copiado')}catch(_){toast('No se pudo copiar')}ta.remove()}}
+async function nativeShare(data){if(!navigator.share)return false;try{await navigator.share(data);return true}catch(e){return e.name==='AbortError'}}
+function textSheet(title,text,intro=''){sheet(`${shead(title)}${intro}<div class="preview">${esc(text)}</div>
+  <div class="stack" style="margin-top:12px"><button class="btn wa wide" data-s="wa">${WA_ICON} Enviar por WhatsApp</button><div class="grid2"><button class="btn" data-s="copy">Copiar</button><button class="btn" data-s="share">Otras apps…</button></div></div>`,s=>{
+  s.addEventListener('click',async e=>{const b=e.target.closest('[data-s]');if(!b)return;if(b.dataset.s==='wa')openWA(text);else if(b.dataset.s==='copy')copyText(text);else if(!(await nativeShare({text})))copyText(text)})})}
+function rankText(j){let t=`🎯 *${j.name}*\n📅 ${fmtDate(j.date)} · ${j.n} dianas\n`;
+  const block=(title,list)=>{let s=`\n🏆 *${title}*\n`;ranked(list).forEach(({a,pos})=>{const m=['🥇','🥈','🥉'][pos-1]||`${pos}.`;s+=`${m} ${a.name} — *${tot(a)}* (11×${cnt(a,11)} · 10×${cnt(a,10)})${doneT(a)<j.n?` [${doneT(a)}/${j.n}]`:''}\n`});return s};
+  if(rankMode==='general')t+=block('Clasificación general',j.archers);else groups(j.archers).forEach(([c,l])=>t+=block(c,l));
+  return t+'\n_Recorrido 3D_'}
+function b64e(s){const b=new TextEncoder().encode(s);let bin='';for(let i=0;i<b.length;i+=8192)bin+=String.fromCharCode.apply(null,b.subarray(i,i+8192));return btoa(bin)}
+function b64d(s){const bin=atob(s);return new TextDecoder().decode(Uint8Array.from(bin,c=>c.charCodeAt(0)))}
+function makeCode(j){const o={v:1,j:{i:j.id,n:j.name,d:j.date,t:j.n},p:j.patrol||'',s:db.settings.scorer||'',
+  a:ownA(j).map(a=>[a.id,a.name,a.mod,a.sex,a.age,a.club,a.scores.map(s=>(s[0]==null?'-':ENC[s[0]])+(s[1]==null?'-':ENC[s[1]])).join('')])};
+  return 'R3D:'+b64e(JSON.stringify(o))}
+function readCode(txt){const m=String(txt).replace(/\s+/g,'').match(/R3D:([A-Za-z0-9+/=]+)/);if(!m)throw new Error('No encuentro ningún código de Recorrido 3D en el texto pegado.');
+  let o;try{o=JSON.parse(b64d(m[1]))}catch(e){throw new Error('El código está incompleto o dañado. Copia el mensaje entero otra vez.')}
+  if(!o||o.v!==1||!Array.isArray(o.a))throw new Error('Este código no es de una versión compatible.');
+  const n=clampN(o.j?.t),p=String(o.p||'');
+  return {jid:String(o.j?.i||''),name:String(o.j?.n||'Jornada'),date:String(o.j?.d||today()),n,patrol:p,scorer:String(o.s||''),
+    archers:o.a.map(r=>{const str=String(r[6]||'');return fixA({id:r[0],name:r[1],mod:r[2],sex:r[3],age:r[4],club:r[5],patrol:p,own:false,
+      scores:Array.from({length:n},(_,i)=>[DEC[str[i*2]],DEC[str[i*2+1]]])},n)})}}
+function sendCodeSheet(){const j=J(),own=ownA(j);if(!own.length){toast('Primero añade tiradores a tu patrulla');return}
+  const code=makeCode(j);
+  const msg=`🎯 Recorrido 3D · ${j.patrol?'Patrulla '+j.patrol:'Patrulla'}\n${j.name} (${fmtDate(j.date)}) · ${j.n} dianas${db.settings.scorer?'\nAnotador: '+db.settings.scorer:''}\n`+
+    own.map(a=>`• ${a.name} — ${tot(a)} pts (${doneT(a)}/${j.n})`).join('\n')+
+    `\n\nPara importarlo: abre Recorrido 3D → Clasificación → Importar y pega este mensaje entero.\n${code}`;
+  textSheet('Enviar mi patrulla',msg,`<p class="mut" style="margin:0 0 10px">Mándalo al <b>otro anotador</b> para comprobar las puntuaciones o al <b>organizador</b> para la clasificación general.${db.settings.scorer?'':' Puedes poner tu nombre de anotador en Ajustes.'}</p>`)}
+
+let pend=null;
+function importSheet(){pend=null;sheet(`${shead('Importar patrulla')}<p class="mut" style="margin:0">Pega el mensaje recibido por WhatsApp. Puedes pegarlo entero: la app encuentra el código sola.</p>
+  <textarea class="in" id="imptxt" style="margin-top:10px" placeholder="R3D:…"></textarea>
+  <div class="grid2" style="margin-top:8px"><button class="btn" data-s="paste">📋 Pegar</button><label class="btn">📄 Archivo<input type="file" hidden accept=".txt,text/plain"></label></div>
+  <button class="btn prim wide" style="margin-top:8px" data-s="read">Leer código</button><div id="impres"></div>`,s=>{
+  const ta=$('#imptxt',s),res=$('#impres',s);
+  const read=()=>{try{pend=readCode(ta.value);const p=pend,j=J();
+      const same=j&&ownA(j).length&&p.archers.filter(b=>ownA(j).some(a=>a.id===b.id||nrm(a.name)===nrm(b.name))).length>=Math.ceil(p.archers.length/2);
+      res.innerHTML=`<div class="card" style="box-shadow:none;background:var(--s2)"><b>${p.patrol?'Patrulla '+esc(p.patrol):'Patrulla'}</b> · ${p.archers.length} tiradores<div class="mut">${esc(p.name)} · ${fmtDate(p.date)} · ${p.n} dianas${p.scorer?' · Anotador: '+esc(p.scorer):''}</div>
+        <div class="mut" style="margin-top:6px">${p.archers.map(a=>esc(a.name)+' ('+tot(a)+')').join(', ')}</div></div>
+        <h4>¿Qué quieres hacer?</h4><div class="stack">
+        ${j&&ownA(j).length?`<button class="btn ${same?'prim':''} wide opt" data-s="cmp">✔︎ Comprobar con mis puntuaciones<small>Soy el otro anotador de esta patrulla</small></button>`:''}
+        ${j?`<button class="btn ${!same&&j?'prim':''} wide opt" data-s="merge">🏆 Añadir a la clasificación de “${esc(j.name)}”<small>Juntar patrullas (organizador)</small></button>`:''}
+        <button class="btn wide opt" data-s="new">＋ Crear jornada con estos tiradores<small>Para empezar a anotar la misma patrulla</small></button></div>
+        ${same?'<div class="note">Parece tu misma patrulla: lo normal es <b>comprobar</b>, no añadirla a la clasificación.</div>':''}
+        ${j&&p.n!==j.n?`<div class="note">⚠️ Este código tiene ${p.n} dianas y tu jornada ${j.n}.</div>`:''}`;
+      res.scrollIntoView({behavior:'smooth',block:'start'})}
+    catch(e){pend=null;res.innerHTML=`<div class="note" style="color:var(--r)">${esc(e.message)}</div>`}};
+  $('input[type=file]',s).addEventListener('change',async e=>{const f=e.target.files[0];if(f){ta.value=await f.text();read()}});
+  s.addEventListener('click',async e=>{const b=e.target.closest('[data-s]');if(!b)return;const k=b.dataset.s;
+    if(k==='paste'){try{ta.value=await navigator.clipboard.readText();read()}catch(_){toast('Mantén pulsado el cuadro y elige “Pegar”');ta.focus()}}
+    else if(k==='read')read();
+    else if(k==='cmp'&&pend)compareSheet(pend);
+    else if(k==='merge'&&pend)mergeImport(pend);
+    else if(k==='new'&&pend)newFromImport(pend)})})}
+function mergeImport(p){const j=J();let add=0,upd=0,skip=0;
+  p.archers.forEach(b=>{const own=j.archers.find(a=>a.own&&a.id===b.id);if(own){skip++;return}
+    const k=j.archers.findIndex(a=>!a.own&&(a.id===b.id||(nrm(a.name)===nrm(b.name)&&a.patrol===b.patrol)));const nb=fixA({...b,own:false},j.n);
+    if(k>=0){j.archers[k]=nb;upd++}else{j.archers.push(nb);add++}});
+  save();closeSheet();view='rank';render();toast(`Patrulla importada: ${add} nuevos${upd?`, ${upd} actualizados`:''}${skip?`, ${skip} ya eran tuyos`:''}`)}
+function newFromImport(p){const nj=fixJ({id:uid(),name:p.name,date:p.date,n:p.n,patrol:p.patrol,cur:1,archers:p.archers.map(a=>({...a,own:true,scores:[]}))});
+  db.jornadas.push(nj);db.activeId=nj.id;undo=[];save();closeSheet();go('score');toast('Jornada creada con la misma patrulla')}
+function compareSheet(p){const j=J();const own=ownA(j);const pairs=[],missing=[],used=new Set();
+  own.forEach(a=>{const b=p.archers.find(x=>x.id===a.id)||p.archers.find(x=>!used.has(x.id)&&nrm(x.name)===nrm(a.name));if(b){used.add(b.id);pairs.push([a,b])}else missing.push(a)});
+  const extra=p.archers.filter(b=>!used.has(b.id));const kept=new Set();
+  const dots=s=>[0,1].map(k=>s[k]==null?'<span class="dot e">–</span>':`<span class="dot v${s[k]}">${s[k]}</span>`).join('')+`<span style="margin-left:4px">= ${pts(s)}</span>`;
+  const s=sheet('<div id="cmpbody"></div>',el=>{
+    const draw=()=>{const diffs=[];pairs.forEach(([a,b])=>{for(let i=0;i<Math.min(j.n,p.n);i++){const x=a.scores[i],y=b.scores[i];if((x[0]!==y[0]||x[1]!==y[1])&&!kept.has(a.id+':'+i))diffs.push({a,b,i})}});
+      $('#cmpbody',el).innerHTML=`${shead('Comprobación')}<div class="mut">Comparando tu patrulla con ${p.scorer?'<b>'+esc(p.scorer)+'</b>':'el otro anotador'} · ${pairs.length} tiradores emparejados.</div>
+      ${!diffs.length&&!missing.length&&!extra.length?`<div class="okbox"><div class="big">✅</div><h2>¡Los datos coinciden!</h2><p class="mut">Las ${Math.min(j.n,p.n)} dianas de los ${pairs.length} tiradores son iguales en los dos móviles.</p></div>`:''}
+      ${diffs.length?`<h4>${diffs.length} diferencia${diffs.length>1?'s':''}</h4><button class="btn sm" data-s="all" style="margin-bottom:4px">Aceptar todas las del otro anotador</button>`+diffs.map(d=>`<div class="diff"><div class="dh"><span>${esc(d.a.name)}</span><span>Diana ${d.i+1}</span></div>
+        <div class="pairs"><button data-s="mine" data-k="${esc(d.a.id)}:${d.i}"><small>MÍA · dejar</small><span class="dots">${dots(d.a.scores[d.i])}</span></button><button data-s="theirs" data-k="${esc(d.a.id)}:${d.i}" data-b="${esc(d.b.id)}"><small>DEL OTRO · usar</small><span class="dots">${dots(d.b.scores[d.i])}</span></button></div></div>`).join(''):''}
+      ${missing.length?`<div class="note">Solo están en tu móvil: ${missing.map(a=>esc(a.name)).join(', ')}</div>`:''}
+      ${extra.length?`<div class="note">Solo están en el otro móvil: ${extra.map(a=>esc(a.name)).join(', ')}</div>`:''}
+      <button class="btn prim wide" style="margin-top:16px" data-close>Hecho</button>`};
+    draw();
+    el.addEventListener('click',e=>{const b=e.target.closest('[data-s]');if(!b)return;
+      const apply=(aid,i,bid)=>{const a=j.archers.find(x=>x.id===aid),o=p.archers.find(x=>x.id===bid);if(!a||!o)return null;const prev=a.scores[i].slice();a.scores[i]=o.scores[i].slice();return {aid,i,prev}};
+      if(b.dataset.s==='mine'){kept.add(b.dataset.k);draw()}
+      else if(b.dataset.s==='theirs'){const k=b.dataset.k,cut=k.lastIndexOf(':');const it=apply(k.slice(0,cut),+k.slice(cut+1),b.dataset.b);if(it)pushUndo([it]);save();draw();render()}
+      else if(b.dataset.s==='all'){const items=[];pairs.forEach(([a,o])=>{for(let i=0;i<Math.min(j.n,p.n);i++){const x=a.scores[i],y=o.scores[i];if((x[0]!==y[0]||x[1]!==y[1])&&!kept.has(a.id+':'+i)){const it=apply(a.id,i,o.id);it&&items.push(it)}}});if(items.length)pushUndo(items);save();draw();render();toast(`${items.length} dianas corregidas`)}})});
+  return s}
+
+/* ---------- Imagen de la clasificación ---------- */
+function rankBlob(j){const gs=rankMode==='general'?[['Clasificación general',j.archers]]:groups(j.archers);
+  const W=1080,P=64,RH=84;let H=300;gs.forEach(([,l])=>H+=96+l.length*RH);H+=90;
+  const c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');const F=(w,s)=>`${w} ${s}px system-ui,-apple-system,"Segoe UI",Roboto,sans-serif`;
+  const fit=(t,max)=>{if(x.measureText(t).width<=max)return t;while(t.length>1&&x.measureText(t+'…').width>max)t=t.slice(0,-1);return t+'…'};
+  x.fillStyle='#0b0c0e';x.fillRect(0,0,W,H);
+  [['#ffd21f',70],['#e3262e',140],['#1f7fe0',210],['#5a5f6a',280],['#f7f7f2',350]].forEach(([col,r])=>{x.beginPath();x.arc(W-30,110,r,0,Math.PI*2);x.strokeStyle=col;x.globalAlpha=.18;x.lineWidth=30;x.stroke()});x.globalAlpha=1;
+  [['#f7f7f2',1],['#111',.8],['#1f7fe0',.6],['#e3262e',.4],['#ffd21f',.2]].forEach(([col,k])=>{x.beginPath();x.arc(P+52,124,52*k,0,Math.PI*2);x.fillStyle=col;x.fill()});
+  x.textBaseline='middle';x.fillStyle='#fff';x.font=F(850,54);x.fillText(fit(j.name,W-P*2-140),P+130,104);
+  x.fillStyle='#a3a8b1';x.font=F(500,30);x.fillText(`${fmtDate(j.date)} · ${j.n} dianas · ${j.archers.length} tiradores`,P+130,154);
+  const rr=(X,Y,w,h,r)=>{x.beginPath();if(x.roundRect)x.roundRect(X,Y,w,h,r);else x.rect(X,Y,w,h)};
+  let y=262;
+  gs.forEach(([title,list])=>{x.fillStyle='#ffd21f';x.font=F(850,32);x.textAlign='left';x.fillText(fit(title.toUpperCase(),W-2*P),P,y);y+=30;x.fillStyle='#2a2d34';x.fillRect(P,y,W-2*P,3);y+=24;
+    ranked(list).forEach(({a,pos},k)=>{const cy=y+RH/2-6;if(k%2===0){x.fillStyle='#16181c';rr(P-14,y-4,W-2*P+28,RH-4,18);x.fill()}
+      x.beginPath();x.arc(P+30,cy,27,0,Math.PI*2);x.fillStyle=['#ffd21f','#c9cdd5','#d08a4c'][pos-1]||'#2a2e36';x.fill();
+      x.fillStyle=pos<=3?'#111':'#fff';x.font=F(850,26);x.textAlign='center';x.fillText(String(pos),P+30,cy+1);
+      x.textAlign='left';x.fillStyle='#fff';x.font=F(750,34);x.fillText(fit(a.name,W-2*P-380),P+80,cy-13);
+      x.fillStyle='#a3a8b1';x.font=F(500,22);x.fillText(fit(catOf(a)+(a.own?'':` · P${a.patrol||'?'}`),W-2*P-380),P+80,cy+20);
+      x.textAlign='right';x.fillStyle='#fff';x.font=F(900,46);x.fillText(String(tot(a)),W-P,cy);
+      x.fillStyle='#a3a8b1';x.font=F(600,22);x.fillText(`11×${cnt(a,11)}  10×${cnt(a,10)}`,W-P-120,cy-12);x.fillText(`${doneT(a)}/${j.n} dianas`,W-P-120,cy+18);
+      y+=RH});y+=42});
+  x.textAlign='center';x.fillStyle='#6d727c';x.font=F(600,24);x.fillText('🎯 Recorrido 3D',W/2,H-46);
+  return new Promise(r=>c.toBlob(r,'image/png'))}
+async function imgSheet(){const j=J();const blob=await rankBlob(j);if(!blob){toast('No se pudo crear la imagen');return}
+  const url=URL.createObjectURL(blob),name=`clasificacion_${(j.date||'')}.png`,file=new File([blob],name,{type:'image/png'});
+  const can=navigator.canShare&&navigator.canShare({files:[file]});
+  sheet(`${shead('Imagen de la clasificación')}<img class="imgprev" src="${url}" alt="Clasificación"><div class="stack" style="margin-top:12px">
+    ${can?`<button class="btn wa wide" data-s="share">${WA_ICON} Compartir (WhatsApp…)</button>`:''}<button class="btn wide" data-s="dl">⬇️ Guardar imagen</button></div>
+    ${can?'':'<div class="note">Guarda la imagen y envíala desde WhatsApp como foto.</div>'}`,s=>{
+    s.addEventListener('click',async e=>{const b=e.target.closest('[data-s]');if(!b)return;if(b.dataset.s==='share')await nativeShare({files:[file],title:j.name});else dl(name,blob)})})}
+
+/* ---------- Archivos ---------- */
+function dl(name,blob){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),5000);toast('Archivo guardado')}
+async function saveFile(name,text,type){const blob=new Blob([text],{type});const file=new File([blob],name,{type});
+  if(isTouch&&navigator.canShare&&navigator.canShare({files:[file]})){if(await nativeShare({files:[file],title:name}))return}dl(name,blob)}
+const csvCell=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
+const csv=rows=>'﻿'+rows.map(r=>r.map(csvCell).join(';')).join('\r\n');
+const slug=s=>nrm(s).replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'')||'jornada';
+function csvRank(){const j=J();if(!j.archers.length){toast('No hay tiradores');return}
+  const rows=[['Posición','Pos. categoría','Tirador','Modalidad','Sexo','Edad','Club','Patrulla','Puntos','11','10','8','5','0','Dianas completas',...Array.from({length:j.n},(_,i)=>`D${i+1}`)]];
+  const pc=new Map();groups(j.archers).forEach(([,l])=>ranked(l).forEach(({a,pos})=>pc.set(a.id,pos)));
+  ranked(j.archers).forEach(({a,pos})=>rows.push([pos,pc.get(a.id),a.name,a.mod,a.sex,a.age,a.club,a.patrol,tot(a),...VALUES.map(v=>cnt(a,v)),doneT(a),...a.scores.map(s=>s[0]==null?'':pts(s))]));
+  saveFile(`clasificacion_${slug(j.name)}.csv`,csv(rows),'text/csv')}
+function csvDetail(){const j=J();if(!j.archers.length){toast('No hay tiradores');return}
+  const rows=[['Tirador','Categoría','Patrulla','Diana','Flecha 1','Flecha 2','Total diana','Acumulado']];
+  j.archers.forEach(a=>{let run=0;a.scores.forEach((s,i)=>{run+=pts(s);rows.push([a.name,catOf(a),a.patrol,i+1,s[0]??'',s[1]??'',s[0]==null?'':pts(s),run])})});
+  saveFile(`detalle_${slug(j.name)}.csv`,csv(rows),'text/csv')}
+
+/* ===== AJUSTES ===== */
+function settingsSheet(){const S=db.settings;
+  sheet(`${shead('Ajustes')}
+  <h4>Apariencia</h4><div class="segr" id="themeSeg">${[['dark','🌙 Oscuro'],['light','☀️ Claro'],['auto','Auto']].map(([v,l])=>`<label><input type="radio" name="theme" value="${v}" ${S.theme===v?'checked':''}><span>${l}</span></label>`).join('')}</div>
+  <h4>Anotador</h4><input class="in" id="scorer" maxlength="40" placeholder="Tu nombre (aparece al enviar la patrulla)" value="${esc(S.scorer)}">
+  <h4>En el recorrido</h4>
+  <label class="sw"><div>Vibración al marcar<small>No disponible en iPhone</small></div><input type="checkbox" data-set="vibrate" ${S.vibrate?'checked':''}></label>
+  <label class="sw"><div>Pantalla siempre encendida<small>Mientras estás en “Puntuar”</small></div><input type="checkbox" data-set="wake" ${S.wake?'checked':''}></label>
+  <label class="sw"><div>Saltar al siguiente tirador<small>Al anotar la 2ª flecha</small></div><input type="checkbox" data-set="advance" ${S.advance?'checked':''}></label>
+  <h4>Modalidades (una por línea)</h4><textarea class="in" id="mods" rows="6">${esc(S.mods.join('\n'))}</textarea>
+  <h4>Categorías de edad (una por línea)</h4><textarea class="in" id="ages" rows="5">${esc(S.ages.join('\n'))}</textarea>
+  <h4>Copia de seguridad</h4><p class="mut" style="margin:0 0 8px">Los datos se guardan solo en este móvil. Haz copias de vez en cuando.</p>
+  <div class="grid2"><button class="btn" data-s="backup">💾 Exportar copia</button><label class="btn">♻️ Restaurar<input type="file" hidden accept=".json,application/json"></label></div>
+  ${deferredPrompt&&!isStandalone()?'<button class="btn prim wide" style="margin-top:8px" data-act="install">Instalar la app</button>':''}
+  ${isIOS&&!isStandalone()?'<div class="note">Para instalarla en iPhone: en Safari pulsa <b>Compartir</b> (□↑) → <b>Añadir a pantalla de inicio</b>.</div>':''}
+  <h4>Zona peligrosa</h4><button class="btn danger wide" data-s="wipe">Borrar todos los datos</button>
+  <p class="mut" style="text-align:center;font-size:12px;margin-top:16px">Recorrido 3D v${APPVER} · funciona sin conexión</p>
+  <button class="btn prim wide" data-close>Listo</button>`,s=>{
+    $$('[name=theme]',s).forEach(r=>r.addEventListener('change',()=>{S.theme=r.value;applyTheme();save()}));
+    $$('[data-set]',s).forEach(c=>c.addEventListener('change',()=>{S[c.dataset.set]=c.checked;save();wake()}));
+    $('#scorer',s).addEventListener('change',e=>{S.scorer=e.target.value.trim();save()});
+    const lines=t=>[...new Set(t.split('\n').map(x=>x.trim()).filter(Boolean))];
+    $('#mods',s).addEventListener('change',e=>{const l=lines(e.target.value);S.mods=l.length?l:DEF_MODS.slice();save();render()});
+    $('#ages',s).addEventListener('change',e=>{const l=lines(e.target.value);S.ages=l.length?l:DEF_AGES.slice();save();render()});
+    $('input[type=file]',s).addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;try{const d=JSON.parse(await f.text());if(!d||!Array.isArray(d.jornadas))throw 0;
+      if(!(await ask(`La copia tiene ${d.jornadas.length} jornada(s). Se sustituirán todos los datos actuales.`,'Restaurar',true)))return;
+      localStorage.setItem(KEY,JSON.stringify(d));db=load();undo=[];applyTheme();save();view=J()?'score':'jornadas';render();toast('Copia restaurada')}catch(_){toast('Ese archivo no es una copia válida')}});
+    s.addEventListener('click',async e=>{const b=e.target.closest('[data-s]');if(!b)return;
+      if(b.dataset.s==='backup')saveFile(`recorrido3d_copia_${today()}.json`,JSON.stringify(db),'application/json');
+      else if(b.dataset.s==='wipe'){if(await ask('Se borrarán <b>todas las jornadas, tiradores y puntuaciones</b> de este móvil. No se puede deshacer.','Borrar todo',true)){const keep=db.settings;db={jornadas:[],activeId:null,settings:keep};undo=[];save();view='jornadas';render();toast('Datos borrados')}}})})}
+
+/* ---------- Eventos ---------- */
+const ACT={prev:()=>goT(J().cur-1),next:()=>goT(J().cur+1),map:()=>{mapOpen=!mapOpen;render()},gorank:()=>go('rank'),undo:doUndo,clearT,
+  newJ:()=>jSheet(),settings:settingsSheet,waText:()=>textSheet('Compartir clasificación',rankText(J())),img:imgSheet,sendCode:sendCodeSheet,import:importSheet,csv:csvRank,csv2:csvDetail,
+  install:async()=>{if(!deferredPrompt)return;deferredPrompt.prompt();await deferredPrompt.userChoice.catch(()=>{});deferredPrompt=null;closeSheet();render()},
+  hideInstall:()=>{db.settings.hideInstall=true;save();render()}};
+document.addEventListener('click',e=>{const t=e.target;let el;
+  if(el=t.closest('[data-act]')){const f=ACT[el.dataset.act];if(f){f();return}}
+  if(t.closest('.sheet')&&!t.closest('[data-stat],[data-tab]'))return;
+  const card=t.closest('.ac');
+  if(card){const aid=card.dataset.aid;
+    if(el=t.closest('[data-v]')){setScore(aid,+el.dataset.v);return}
+    if(el=t.closest('[data-slot]')){slotTap(aid,+el.dataset.slot);return}
+    if(t.closest('[data-clra]')){clearArcher(aid);return}}
+  if(el=t.closest('[data-tab]')){closeSheet();go(el.dataset.tab);return}
+  if(el=t.closest('[data-t]')){goT(+el.dataset.t);return}
+  if(el=t.closest('[data-stat]')){statSheet(el.dataset.stat);return}
+  if(el=t.closest('[data-rm]')){rankMode=el.dataset.rm;render();return}
+  if(el=t.closest('[data-open]')){db.activeId=el.dataset.open;undo=[];save();go('score');return}
+  if(el=t.closest('[data-editj]')){jSheet(el.dataset.editj);return}
+  if(el=t.closest('[data-dupj]')){jSheet(null,el.dataset.dupj);return}
+  if(el=t.closest('[data-delj]')){delJ(el.dataset.delj);return}
+  if(el=t.closest('[data-edita]')){editArcherSheet(el.dataset.edita);return}
+  if(el=t.closest('[data-dela]')){delArcher(el.dataset.dela);return}
+  if(el=t.closest('[data-up]')){moveUp(el.dataset.up);return}});
+document.addEventListener('submit',e=>{if(e.target.id==='addA'){e.preventDefault();addArcher(e.target)}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('.sheetwrap'))closeSheet();
+  if(view==='score'&&!$('.sheetwrap')&&!/INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName||'')&&J()){if(e.key==='ArrowRight')goT(J().cur+1);if(e.key==='ArrowLeft')goT(J().cur-1)}});
+addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;if(view==='jornadas')render()});
+addEventListener('appinstalled',()=>{deferredPrompt=null;toast('¡App instalada!');render()});
+addEventListener('resize',setAbh);
+addEventListener('storage',e=>{if(e.key===KEY){db=load();render()}});
+
+applyTheme();setAbh();render();
+navigator.storage?.persist?.().catch(()=>{});
+if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1'))
+  addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+})();
+</script>
+</body>
+</html>
