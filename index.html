@@ -136,7 +136,7 @@ main{max-width:760px;margin:auto;padding:12px}
 
 /* Pestañas */
 .tabs{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--bar);border-top:1px solid var(--line);padding:6px 6px calc(6px + env(safe-area-inset-bottom))}
-.tabs .in{display:grid;grid-template-columns:repeat(4,1fr);max-width:760px;margin:auto}
+.tabs .in{display:grid;grid-template-columns:repeat(5,1fr);max-width:760px;margin:auto}
 .tabs button{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0;border-radius:12px;color:var(--mut);font-size:11px;font-weight:750}
 .tabs svg{width:24px;height:24px}
 .tabs button.on{color:var(--ink)}
@@ -247,6 +247,25 @@ textarea.in{min-height:96px;resize:vertical;font-size:14px;font-family:ui-monosp
 .install{display:flex;gap:12px;align-items:center}
 .install img{width:52px;height:52px;border-radius:12px;flex:none}
 
+.lhead{display:grid;grid-template-columns:1fr 48px;gap:8px}.lhead .iconbtn{width:48px;height:48px;font-size:18px}
+.lhead select{font-weight:800;font-size:17px}
+.rstrip{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-top:10px}
+.rs{background:var(--s1);border:1px dashed var(--s3);border-radius:12px;padding:6px 2px;text-align:center;line-height:1.15}
+.rs b{display:block;font-size:16px;font-weight:900}.rs span{display:block;font-size:10.5px;color:var(--mut);font-weight:700}.rs i{display:block;font-style:normal;font-size:9.5px;font-weight:800;color:var(--mut);margin-top:2px;text-transform:uppercase}
+.rs.app{border:1px solid var(--y)}.rs.app i{color:var(--y)}.rs.excel{border:1px solid var(--b)}.rs.excel i{color:var(--b)}
+[data-theme=light] .rs.app i{color:#a37f00}
+.scs{display:flex;gap:3px;margin-top:4px}
+.sc{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;font-size:10.5px;font-weight:850;flex:none}
+.sc.s5{background:var(--y);color:#111}.sc.s4{background:var(--r);color:#fff}.sc.s3{background:var(--b);color:#fff}.sc.s2{background:#0a0a0a;color:#fff;box-shadow:inset 0 0 0 1.5px #5a5f6a}.sc.s1{background:var(--w);color:#111;box-shadow:inset 0 0 0 1.5px #c9c8bf}.sc.s0{border:1.5px dashed var(--s3);color:var(--mut)}
+.sc.drop{opacity:.35;position:relative}.sc.drop::after{content:"";position:absolute;left:-2px;right:-2px;top:50%;height:2px;background:var(--ink);transform:rotate(-35deg)}
+.rt tr.me td{background:#ffd21f1f}.rt tr[data-person]{cursor:pointer}
+.metag{background:var(--y);color:#111;border-color:var(--y)}
+.pchips{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.pchips button{padding:8px 12px;border-radius:99px;background:var(--s1);border:1px solid var(--line);font-weight:750;font-size:13px;color:var(--mut)}
+.pchips button.on{background:var(--s2);color:var(--ink);border-color:var(--s3)}
+.pchips i{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:6px;vertical-align:-1px;box-shadow:0 0 0 1.5px var(--s1)}
+.legend.lg{margin-top:4px}.legend.lg i{border-radius:50%}
+.seg.sm button{padding:8px 4px;font-size:13px}
 #toast{position:fixed;left:50%;bottom:calc(150px + env(safe-area-inset-bottom));transform:translate(-50%,20px);z-index:80;background:var(--ink);color:var(--bg);padding:11px 16px;border-radius:12px;font-weight:700;font-size:14px;opacity:0;pointer-events:none;transition:.22s;max-width:90vw;text-align:center;box-shadow:0 8px 24px #0006}
 #toast.show{opacity:1;transform:translate(-50%,0)}
 @media (min-width:600px){.pad .sb{height:64px}.kpis{grid-template-columns:repeat(4,1fr)}}
@@ -267,6 +286,7 @@ textarea.in{min-height:96px;resize:vertical;font-size:14px;font-family:ui-monosp
 <nav class="tabs" id="tabs"><div class="in">
   <button data-tab="score"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9.5"/><circle cx="12" cy="12" r="5.5"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/></svg><span>Puntuar</span></button>
   <button data-tab="rank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4zM7 6H4v1.5A3.5 3.5 0 0 0 7.5 11M17 6h3v1.5a3.5 3.5 0 0 1-3.5 3.5"/></svg><span>Clasificación</span></button>
+  <button data-tab="liga"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M6.5 15.5l4-5 3.5 3 5.5-7"/><circle cx="19.5" cy="6.5" r="1.3" fill="currentColor"/></svg><span>Liga</span></button>
   <button data-tab="archers"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg><span>Tiradores</span></button>
   <button data-tab="jornadas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4.5" width="18" height="17" rx="2.5"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/></svg><span>Jornadas</span></button>
 </div></nav>
@@ -274,11 +294,12 @@ textarea.in{min-height:96px;resize:vertical;font-size:14px;font-family:ui-monosp
 
 <script>
 (()=>{'use strict';
-const KEY='recorrido3d_v1', APPVER='1.1.0';
+const KEY='recorrido3d_v1', APPVER='1.2.0';
 const VALUES=[11,10,8,5,0];
 const ENC={11:'E',10:'T',8:'8',5:'5',0:'0'}, DEC={E:11,T:10,'8':8,'5':5,'0':0};
-const DEF_MODS=['Compuesto','Arco desnudo','Instintivo','Longbow','Tradicional','Recurvo'];
-const DEF_AGES=['Infantil','Cadete','Júnior','Sénior','Veterano'];
+const OLD_MODS=['Compuesto','Arco desnudo','Instintivo','Longbow','Tradicional','Recurvo'],OLD_AGES=['Infantil','Cadete','Júnior','Sénior','Veterano'];
+const DEF_MODS=['Compuesto','Arco desnudo','Recurvado instintivo','Arco recto','ASA','ACA'];
+const DEF_AGES=['Sénior','Júnior','Infantil'];
 const SEXES=['Masculino','Femenino'];
 const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -296,10 +317,13 @@ function clampN(n){n=parseInt(n,10);return n>=1&&n<=99?n:24}
 function sortPair(s){const v=(s||[]).filter(ok).sort((a,b)=>b-a);return [v[0]??null,v[1]??null]}
 function fixA(a,n){return {id:String(a.id||uid()),name:String(a.name||'Tirador').slice(0,70),mod:String(a.mod||''),sex:String(a.sex||''),age:String(a.age||''),club:String(a.club||''),patrol:String(a.patrol??''),own:a.own!==false,
   scores:Array.from({length:n},(_,i)=>{const s=a.scores?.[i]||[];return sortPair([s[0],s[1]])})}}
-function fixJ(j){j.id=String(j.id||uid());j.name=String(j.name||'Jornada');j.date=j.date||today();j.n=clampN(j.n);j.patrol=String(j.patrol??'');j.cur=Math.min(j.n,Math.max(1,parseInt(j.cur,10)||1));j.archers=(j.archers||[]).map(a=>fixA(a,j.n));j.created=j.created||Date.now();return j}
+function fixJ(j){j.id=String(j.id||uid());j.name=String(j.name||'Jornada');j.date=j.date||today();j.n=clampN(j.n);j.patrol=String(j.patrol??'');j.cur=Math.min(j.n,Math.max(1,parseInt(j.cur,10)||1));j.archers=(j.archers||[]).map(a=>fixA(a,j.n));j.created=j.created||Date.now();j.liga=typeof j.liga==='string'?j.liga:'';j.round=Math.min(6,Math.max(1,parseInt(j.round,10)||1));return j}
 function load(){let d=null;try{d=JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){}
   if(!d||!Array.isArray(d.jornadas))d={jornadas:[],activeId:null,settings:{}};
-  d.settings=Object.assign({theme:'dark',vibrate:true,wake:true,advance:true,scorer:'',mods:DEF_MODS.slice(),ages:DEF_AGES.slice(),last:{}},d.settings||{});
+  d.settings=Object.assign({theme:'dark',vibrate:true,wake:true,advance:true,scorer:'',me:'Fernando Dapica',mods:DEF_MODS.slice(),ages:DEF_AGES.slice(),last:{}},d.settings||{});
+  if(JSON.stringify(d.settings.mods)===JSON.stringify(OLD_MODS))d.settings.mods=DEF_MODS.slice();
+  if(JSON.stringify(d.settings.ages)===JSON.stringify(OLD_AGES))d.settings.ages=DEF_AGES.slice();
+  d.ligas=Array.isArray(d.ligas)?d.ligas.filter(l=>l&&/^[AC]\d{4}$/.test(l.k)).map(l=>({k:l.k,manual:l.manual&&typeof l.manual==='object'?l.manual:{}})):[];
   d.jornadas=d.jornadas.map(fixJ);
   if(!d.jornadas.some(j=>j.id===d.activeId))d.activeId=d.jornadas[0]?.id||null;
   return d}
@@ -321,7 +345,7 @@ function cmp(a,b,u){return tot(b,u)-tot(a,u)||cnt(b,11,u)-cnt(a,11,u)||cnt(b,10,
 function ranked(list,u){const s=[...list].sort((a,b)=>cmp(a,b,u)||a.name.localeCompare(b.name,'es'));let pos=0;return s.map((a,i)=>{if(i===0||cmp(s[i-1],a,u)!==0)pos=i+1;return {a,pos}})}
 function groups(list){const m=new Map();list.forEach(a=>{const k=catOf(a);if(!m.has(k))m.set(k,[]);m.get(k).push(a)});const S=db.settings,ix=(arr,v)=>{const i=arr.indexOf(v);return i<0?99:i};
   return [...m.entries()].sort((x,y)=>{const a=x[1][0],b=y[1][0];return ix(S.mods,a.mod)-ix(S.mods,b.mod)||ix(SEXES,a.sex)-ix(SEXES,b.sex)||ix(S.ages,a.age)-ix(S.ages,b.age)||x[0].localeCompare(y[0],'es')})}
-const avColor=a=>({Compuesto:'#ffd21f','Arco desnudo':'#e3262e',Instintivo:'#1f7fe0',Longbow:'#f7f7f2',Tradicional:'#c9cdd5',Recurvo:'#d08a4c'}[a.mod]||'#9aa0aa');
+const avColor=a=>({Compuesto:'#ffd21f','Arco desnudo':'#e3262e','Recurvado instintivo':'#1f7fe0',Instintivo:'#1f7fe0','Arco recto':'#f7f7f2',Longbow:'#f7f7f2',Tradicional:'#c9cdd5',Recurvo:'#d08a4c',ASA:'#c9cdd5',ACA:'#d08a4c'}[a.mod]||'#9aa0aa');
 const initials=n=>n.split(/\s+/).filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase();
 
 /* ---------- Estado de interfaz ---------- */
@@ -362,6 +386,7 @@ function render(){const j=J();
   $$('#tabs [data-tab]').forEach(b=>{b.classList.toggle('on',b.dataset.tab===view);b.setAttribute('aria-current',b.dataset.tab===view?'page':'false')});
   let h;
   if(view==='jornadas')h=vJornadas();
+  else if(view==='liga')h=vLiga();
   else if(!j)h=empty('No hay ninguna jornada activa','Crea una jornada nueva o importa la patrulla que te ha enviado el otro anotador.','<div class="stack" style="margin-top:16px"><button class="btn prim" data-act="newJ">＋ Nueva jornada</button><button class="btn" data-act="import">📥 Importar patrulla de WhatsApp</button></div>');
   else h={score:vScore,rank:vRank,archers:vArchers}[view](j);
   $('#main').innerHTML=h;wake()}
@@ -513,7 +538,7 @@ function vJornadas(){const list=[...db.jornadas].sort((a,b)=>(b.date||'').locale
   <button class="btn wide" style="margin-top:8px" data-act="import">📥 Importar patrulla de WhatsApp</button>
   ${list.length?`<div class="sechead"><h2>Historial</h2><span class="count">${list.length}</span></div>`+list.map(j=>{const r=ranked(j.archers),L=r[0];const act=j.id===db.activeId;
     const comp=ownA(j).length?Array.from({length:j.n},(_,k)=>ownA(j).every(a=>full(a.scores[k]))).filter(Boolean).length:0;
-    return `<div class="card jc"><div class="top"><div><h3>${esc(j.name)} ${act?'<span class="badge">ACTIVA</span>':''}</h3><div class="meta">📅 ${fmtDate(j.date)} · 🎯 ${j.n} dianas · 👥 ${j.archers.length} tiradores${j.patrol?' · Patrulla '+esc(j.patrol):''}</div></div></div>
+    return `<div class="card jc"><div class="top"><div><h3>${esc(j.name)} ${act?'<span class="badge">ACTIVA</span>':''}</h3><div class="meta">${j.liga?`🏹 ${ligaName(j.liga)} · tirada ${j.round}<br>`:''}📅 ${fmtDate(j.date)} · 🎯 ${j.n} dianas · 👥 ${j.archers.length} tiradores${j.patrol?' · Patrulla '+esc(j.patrol):''}</div></div></div>
     <div class="lead">${L&&nArrows(L.a)?`🥇 <b>${esc(L.a.name)}</b> · ${tot(L.a)} pts · ${comp}/${j.n} dianas completas`:'<span class="mut">Sin puntuaciones todavía</span>'}</div>
     <div class="acts">${act?`<button class="btn sm prim" data-tab="score">Puntuar</button>`:`<button class="btn sm prim" data-open="${j.id}">Abrir</button>`}<button class="btn sm" data-editj="${j.id}">Editar</button><button class="btn sm" data-dupj="${j.id}">Repetir tiradores</button><button class="btn sm danger" data-delj="${j.id}">Eliminar</button></div></div>`}).join('')
   :empty('¡Bienvenido a Recorrido 3D!','Crea tu primera jornada: elige el número de dianas (24 por defecto), añade los tiradores de tu patrulla y empieza a puntuar.')}`}
@@ -523,16 +548,20 @@ function jSheet(editId,copyFrom){const j=editId?db.jornadas.find(x=>x.id===editI
     <label class="fld"><span>Nombre</span><input class="in" name="name" required maxlength="60" value="${esc(j?j.name:(src?src.name:'Recorrido '+fmtDate(today())))}"></label>
     <div class="f2"><label class="fld"><span>Fecha</span><input class="in" type="date" name="date" value="${esc(j?j.date:today())}"></label>
     <label class="fld"><span>Patrulla</span><input class="in" name="patrol" maxlength="12" placeholder="Ej. 3" value="${esc(j?j.patrol:(src?src.patrol:''))}"></label></div>
+    <div class="f2"><label class="fld"><span>Liga</span><select class="in" name="liga">${ligaOpts(j?j.liga:ligaOf(today()).k)}</select></label>
+    <label class="fld"><span>Tirada nº</span><select class="in" name="round">${roundOpts(j?j.liga:ligaOf(today()).k,j?j.round:ligaOf(today()).r)}</select></label></div>
     <div class="fld"><span>Número de dianas</span><div class="chips">${[24,32].map(v=>`<button type="button" data-n="${v}" class="${n===v?'on':''}">${v}</button>`).join('')}<button type="button" data-n="" class="${n!==24&&n!==32?'on':''}">Otro</button></div>
     <input class="in" type="number" name="n" min="1" max="99" inputmode="numeric" value="${n}" required></div>
     ${src?`<div class="note">Se copiarán los ${ownA(src).length} tiradores de “${esc(src.name)}” sin puntuaciones.</div>`:''}
     <button class="btn prim wide" style="margin-top:16px" type="submit">${j?'Guardar cambios':'Crear y empezar'}</button></form>`,s=>{
-    const inp=$('[name=n]',s);
+    const inp=$('[name=n]',s),selL=$('[name=liga]',s),selR=$('[name=round]',s),dt=$('[name=date]',s);let touched=!!j;
+    selL.addEventListener('change',()=>{touched=true;selR.innerHTML=roundOpts(selL.value,+selR.value)});selR.addEventListener('change',()=>touched=true);
+    dt.addEventListener('change',()=>{if(touched||!dt.value)return;const g=ligaOf(dt.value);selL.innerHTML=ligaOpts(g.k);selR.innerHTML=roundOpts(g.k,g.r)});
     s.addEventListener('click',e=>{const c=e.target.closest('[data-n]');if(!c)return;$$('.chips button',s).forEach(b=>b.classList.toggle('on',b===c));if(c.dataset.n)inp.value=c.dataset.n;else{inp.value='';inp.focus()}});
     inp.addEventListener('input',()=>$$('.chips button',s).forEach(b=>b.classList.toggle('on',b.dataset.n===inp.value||(!b.dataset.n&&inp.value!=='24'&&inp.value!=='32'))));
     $('form',s).addEventListener('submit',async e=>{e.preventDefault();const d=new FormData(e.target);const nn=parseInt(d.get('n'),10);
       if(!(nn>=1&&nn<=99)){toast('El número de dianas debe estar entre 1 y 99');return}
-      const v={name:String(d.get('name')).trim()||'Jornada',date:d.get('date')||today(),patrol:String(d.get('patrol')||'').trim(),n:nn};
+      const v={name:String(d.get('name')).trim()||'Jornada',date:d.get('date')||today(),patrol:String(d.get('patrol')||'').trim(),n:nn,liga:String(d.get('liga')||''),round:parseInt(d.get('round'),10)||1};
       if(j){if(nn<j.n&&j.archers.some(a=>a.scores.slice(nn).some(s=>s[0]!=null))){if(!(await ask(`Hay flechas anotadas a partir de la diana ${nn+1}. Se perderán si reduces a ${nn} dianas.`,'Reducir',true)))return}
         const oldP=j.patrol;Object.assign(j,v);j.archers=j.archers.map(a=>{if(a.own&&a.patrol===oldP)a.patrol=v.patrol;return fixA(a,nn)});j.cur=Math.min(j.cur,nn);undo=[];save();closeSheet();render();toast('Jornada actualizada')}
       else{const nj=fixJ({...v,id:uid(),cur:1,archers:src?ownA(src).map(a=>({...a,id:uid(),patrol:v.patrol,scores:[]})):[]});db.jornadas.push(nj);db.activeId=nj.id;undo=[];save();closeSheet();go(nj.archers.length?'score':'archers');toast('Jornada creada')}})})}
@@ -553,14 +582,14 @@ function rankText(j){const u=upTo(j);let t=`🎯 *${j.name}*\n📅 ${fmtDate(j.d
   return t+'\n_Recorrido 3D_'}
 function b64e(s){const b=new TextEncoder().encode(s);let bin='';for(let i=0;i<b.length;i+=8192)bin+=String.fromCharCode.apply(null,b.subarray(i,i+8192));return btoa(bin)}
 function b64d(s){const bin=atob(s);return new TextDecoder().decode(Uint8Array.from(bin,c=>c.charCodeAt(0)))}
-function makeCode(j){const o={v:1,j:{i:j.id,n:j.name,d:j.date,t:j.n},p:j.patrol||'',s:db.settings.scorer||'',
+function makeCode(j){const o={v:1,j:{i:j.id,n:j.name,d:j.date,t:j.n,l:j.liga||'',r:j.round||1},p:j.patrol||'',s:db.settings.scorer||'',
   a:ownA(j).map(a=>[a.id,a.name,a.mod,a.sex,a.age,a.club,a.scores.map(s=>(s[0]==null?'-':ENC[s[0]])+(s[1]==null?'-':ENC[s[1]])).join('')])};
   return 'R3D:'+b64e(JSON.stringify(o))}
 function readCode(txt){const m=String(txt).replace(/\s+/g,'').match(/R3D:([A-Za-z0-9+/=]+)/);if(!m)throw new Error('No encuentro ningún código de Recorrido 3D en el texto pegado.');
   let o;try{o=JSON.parse(b64d(m[1]))}catch(e){throw new Error('El código está incompleto o dañado. Copia el mensaje entero otra vez.')}
   if(!o||o.v!==1||!Array.isArray(o.a))throw new Error('Este código no es de una versión compatible.');
   const n=clampN(o.j?.t),p=String(o.p||'');
-  return {jid:String(o.j?.i||''),name:String(o.j?.n||'Jornada'),date:String(o.j?.d||today()),n,patrol:p,scorer:String(o.s||''),
+  return {liga:/^[AC]\d{4}$/.test(o.j?.l||'')?o.j.l:'',round:parseInt(o.j?.r,10)||1,jid:String(o.j?.i||''),name:String(o.j?.n||'Jornada'),date:String(o.j?.d||today()),n,patrol:p,scorer:String(o.s||''),
     archers:o.a.map(r=>{const str=String(r[6]||'');return fixA({id:r[0],name:r[1],mod:r[2],sex:r[3],age:r[4],club:r[5],patrol:p,own:false,
       scores:Array.from({length:n},(_,i)=>[DEC[str[i*2]],DEC[str[i*2+1]]])},n)})}}
 function sendCodeSheet(){const j=J(),own=ownA(j);if(!own.length){toast('Primero añade tiradores a tu patrulla');return}
@@ -571,12 +600,16 @@ function sendCodeSheet(){const j=J(),own=ownA(j);if(!own.length){toast('Primero 
   textSheet('Enviar mi patrulla',msg,`<p class="mut" style="margin:0 0 10px">Mándalo al <b>otro anotador</b> para comprobar las puntuaciones o al <b>organizador</b> para la clasificación general.${db.settings.scorer?'':' Puedes poner tu nombre de anotador en Ajustes.'}</p>`)}
 
 let pend=null;
-function importSheet(){pend=null;sheet(`${shead('Importar patrulla')}<p class="mut" style="margin:0">Pega el mensaje recibido por WhatsApp. Puedes pegarlo entero: la app encuentra el código sola.</p>
+function importSheet(){pend=null;sheet(`${shead('Importar patrulla o liga')}<p class="mut" style="margin:0">Pega el mensaje recibido por WhatsApp (de una patrulla o de una liga). Puedes pegarlo entero: la app encuentra el código sola.</p>
   <textarea class="in" id="imptxt" style="margin-top:10px" placeholder="R3D:…"></textarea>
   <div class="grid2" style="margin-top:8px"><button class="btn" data-s="paste">📋 Pegar</button><label class="btn">📄 Archivo<input type="file" hidden accept=".txt,text/plain"></label></div>
   <button class="btn prim wide" style="margin-top:8px" data-s="read">Leer código</button><div id="impres"></div>`,s=>{
   const ta=$('#imptxt',s),res=$('#impres',s);
-  const read=()=>{try{pend=readCode(ta.value);const p=pend,j=J();
+  const read=()=>{if(/R3L:/.test(ta.value)){try{const o=readLigaCode(ta.value);const k=o.k,rs=o.r.map(x=>x.r);
+        res.innerHTML=`<div class="card" style="box-shadow:none;background:var(--s2)"><b>🏹 ${esc(ligaName(k))}</b><div class="mut">Tiradas ${rs.join(', ')} · ${o.r.reduce((t,x)=>t+x.res.length,0)} resultados</div></div>
+          <button class="btn prim wide opt" style="margin-top:10px" data-s="liga">📥 Importar a la liga<small>Las tiradas que ya tengas anotadas en la app tienen preferencia</small></button>`;
+        pend={liga:o};res.scrollIntoView({behavior:'smooth',block:'start'})}catch(e){pend=null;res.innerHTML=`<div class="note" style="color:var(--r)">${esc(e.message)}</div>`}return}
+    try{pend=readCode(ta.value);const p=pend,j=J();
       const same=j&&ownA(j).length&&p.archers.filter(b=>ownA(j).some(a=>a.id===b.id||nrm(a.name)===nrm(b.name))).length>=Math.ceil(p.archers.length/2);
       res.innerHTML=`<div class="card" style="box-shadow:none;background:var(--s2)"><b>${p.patrol?'Patrulla '+esc(p.patrol):'Patrulla'}</b> · ${p.archers.length} tiradores<div class="mut">${esc(p.name)} · ${fmtDate(p.date)} · ${p.n} dianas${p.scorer?' · Anotador: '+esc(p.scorer):''}</div>
         <div class="mut" style="margin-top:6px">${p.archers.map(a=>esc(a.name)+' ('+tot(a)+')').join(', ')}</div></div>
@@ -592,6 +625,7 @@ function importSheet(){pend=null;sheet(`${shead('Importar patrulla')}<p class="m
   s.addEventListener('click',async e=>{const b=e.target.closest('[data-s]');if(!b)return;const k=b.dataset.s;
     if(k==='paste'){try{ta.value=await navigator.clipboard.readText();read()}catch(_){toast('Mantén pulsado el cuadro y elige “Pegar”');ta.focus()}}
     else if(k==='read')read();
+    else if(k==='liga'&&pend?.liga)importLiga(pend.liga);
     else if(k==='cmp'&&pend)compareSheet(pend);
     else if(k==='merge'&&pend)mergeImport(pend);
     else if(k==='new'&&pend)newFromImport(pend)})})}
@@ -600,7 +634,7 @@ function mergeImport(p){const j=J();let add=0,upd=0,skip=0;
     const k=j.archers.findIndex(a=>!a.own&&(a.id===b.id||(nrm(a.name)===nrm(b.name)&&a.patrol===b.patrol)));const nb=fixA({...b,own:false},j.n);
     if(k>=0){j.archers[k]=nb;upd++}else{j.archers.push(nb);add++}});
   save();closeSheet();view='rank';render();toast(`Patrulla importada: ${add} nuevos${upd?`, ${upd} actualizados`:''}${skip?`, ${skip} ya eran tuyos`:''}`)}
-function newFromImport(p){const nj=fixJ({id:uid(),name:p.name,date:p.date,n:p.n,patrol:p.patrol,cur:1,archers:p.archers.map(a=>({...a,own:true,scores:[]}))});
+function newFromImport(p){const nj=fixJ({id:uid(),name:p.name,date:p.date,n:p.n,patrol:p.patrol,liga:p.liga,round:p.round,cur:1,archers:p.archers.map(a=>({...a,own:true,scores:[]}))});
   db.jornadas.push(nj);db.activeId=nj.id;undo=[];save();closeSheet();go('score');toast('Jornada creada con la misma patrulla')}
 function compareSheet(p){const j=J();const own=ownA(j);const pairs=[],missing=[],used=new Set();
   own.forEach(a=>{const b=p.archers.find(x=>x.id===a.id)||p.archers.find(x=>!used.has(x.id)&&nrm(x.name)===nrm(a.name));if(b){used.add(b.id);pairs.push([a,b])}else missing.push(a)});
@@ -671,10 +705,128 @@ function csvDetail(){const j=J();if(!j.archers.length){toast('No hay tiradores')
   j.archers.forEach(a=>{let run=0;a.scores.forEach((s,i)=>{run+=pts(s);rows.push([a.name,catOf(a),a.patrol,i+1,s[0]??'',s[1]??'',s[0]==null?'':pts(s),run])})});
   saveFile(`detalle_${slug(j.name)}.csv`,csv(rows),'text/csv')}
 
+/* ===== LIGAS ===== */
+const LMON={A:['Enero','Febrero','Marzo','Abril','Mayo','Junio'],C:['Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre']};
+function ligaOf(date){const m=parseInt(String(date).slice(5,7),10)||1,y=parseInt(String(date).slice(0,4),10)||new Date().getFullYear();return {k:(m<=6?'A':'C')+y,r:m<=6?m:m-6}}
+const ligaName=k=>(k[0]==='A'?'Apertura ':'Clausura ')+k.slice(1);
+const ligaShort=k=>(k[0]==='A'?'Ape ':'Cla ')+k.slice(3);
+const ligaOrd=k=>+k.slice(1)*2+(k[0]==='C'?1:0);
+const lcat=(mod,sex,age)=>[mod||'Sin modalidad',sexShort(sex)||'—',age||'Sénior'].join(' · ');
+const isMe=name=>!!db.settings.me&&nrm(name)===nrm(db.settings.me);
+let ligaK=null,ligaMode='tabla',ligaCat=null,ligaPick=null,ligaMetric='tot';
+function ligaOpts(sel){const y=new Date().getFullYear(),set=new Set();[y-1,y,y+1].forEach(v=>{set.add('A'+v);set.add('C'+v)});ligaKeys().forEach(k=>set.add(k));if(sel)set.add(sel);
+  return `<option value="">Sin liga (tirada suelta)</option>`+[...set].sort((a,b)=>ligaOrd(b)-ligaOrd(a)).map(k=>`<option value="${k}" ${k===sel?'selected':''}>${ligaName(k)}</option>`).join('')}
+function roundOpts(k,sel){const m=LMON[(k||'C')[0]]||LMON.C;return [1,2,3,4,5,6].map(r=>`<option value="${r}" ${r===sel?'selected':''}>${r} · ${k?m[r-1]:''}</option>`).join('')}
+function ligaKeys(){const s=new Set(db.ligas.map(l=>l.k));db.jornadas.forEach(j=>{if(j.liga)s.add(j.liga)});return [...s].sort((a,b)=>ligaOrd(b)-ligaOrd(a))}
+function getLiga(k,create){let l=db.ligas.find(x=>x.k===k);if(!l&&create){l={k,manual:{}};db.ligas.push(l)}return l}
+function scrRank(list){const by=new Map();list.forEach(x=>{if(!by.has(x.cat))by.set(x.cat,[]);by.get(x.cat).push(x)});
+  by.forEach(arr=>{arr.sort((a,b)=>b.pts-a.pts||b.n11-a.n11||b.n10-a.n10);let pos=0;arr.forEach((x,i)=>{const p=arr[i-1];if(!p||p.pts!==x.pts||p.n11!==x.n11||p.n10!==x.n10)pos=i+1;x.scr=pos<=4?6-pos:1})})}
+function roundRes(k,r){const js=db.jornadas.filter(j=>j.liga===k&&j.round===r);
+  if(js.length){const m=new Map();js.forEach(j=>j.archers.forEach(a=>{const na=nArrows(a);if(!na)return;const key=nrm(a.name),o=m.get(key);if(o&&o._na>=na)return;
+      m.set(key,{key,name:a.name,mod:a.mod,sex:a.sex,age:a.age,cat:lcat(a.mod,a.sex,a.age),pts:tot(a),n11:cnt(a,11),n10:cnt(a,10),_na:na})}));
+    const list=[...m.values()];if(list.length){scrRank(list);return {src:'app',list}}}
+  const man=getLiga(k)?.manual?.[r];
+  if(Array.isArray(man)&&man.length)return {src:'excel',list:man.map(x=>({key:nrm(x[0]),name:String(x[0]),mod:x[1]||'',sex:x[2]||'',age:x[3]||'',cat:lcat(x[1],x[2],x[3]),pts:+x[4]||0,scr:+x[5]||0,n11:+x[6]||0,n10:+x[7]||0}))};
+  return null}
+function ligaCalc(k){const rounds=[1,2,3,4,5,6].map(r=>roundRes(k,r)),held=rounds.filter(Boolean).length,pending=6-held,P=new Map();
+  rounds.forEach((rr,ri)=>rr&&rr.list.forEach(x=>{let p=P.get(x.key);if(!p){p={key:x.key,rounds:Array(6).fill(null)};P.set(x.key,p)}Object.assign(p,{name:x.name,cat:x.cat,mod:x.mod,sex:x.sex,age:x.age});p.rounds[ri]=x}));
+  const people=[...P.values()];
+  people.forEach(p=>{p.att=p.rounds.filter(Boolean).length;p.drop=-1;
+    if(held===6){let b=null;p.rounds.forEach((x,i)=>{const sc=x?x.scr:0,pt=x?x.pts:0;if(!b||sc<b.sc||(sc===b.sc&&pt<b.pt))b={i,sc,pt}});p.drop=b.i}
+    p.scr=0;p.pts=0;p.n11=0;p.n10=0;p.rounds.forEach((x,i)=>{if(x&&i!==p.drop){p.scr+=x.scr;p.pts+=x.pts;p.n11+=x.n11;p.n10+=x.n10}});
+    p.out=p.att+pending<4;p.avg=p.att?p.rounds.reduce((t,x)=>t+(x?x.pts:0),0)/p.att:0});
+  const cats=new Map();people.forEach(p=>{if(!cats.has(p.cat))cats.set(p.cat,[]);cats.get(p.cat).push(p)});
+  const S=db.settings,ix=(arr,v)=>{const i=arr.indexOf(v);return i<0?99:i};
+  const cmpP=(a,b)=>(a.out-b.out)||b.scr-a.scr||b.pts-a.pts||b.n11-a.n11||b.n10-a.n10;
+  const groups=[...cats.entries()].map(([c,l])=>{l.sort((a,b)=>cmpP(a,b)||a.name.localeCompare(b.name,'es'));let pos=0;l.forEach((p,i)=>{if(i===0||cmpP(l[i-1],p)!==0)pos=i+1;p.pos=pos});return [c,l]})
+    .sort((x,y)=>{const a=x[1][0],b=y[1][0];return ix(S.mods,a.mod)-ix(S.mods,b.mod)||ix(S.ages,a.age||'Sénior')-ix(S.ages,b.age||'Sénior')||ix(SEXES,a.sex)-ix(SEXES,b.sex)||x[0].localeCompare(y[0],'es')});
+  return {k,rounds,held,pending,people,groups}}
+
+/* Gráfica de líneas (eje vertical ajustado a los valores para que se noten las diferencias) */
+const PAL=['#e3262e','#1f7fe0','var(--ink)','#1fa855','#d08a4c','#b07cff','#3fd0d9','#ff7ab6'];
+function lineChart(labels,series,{dec=0}={}){const vals=series.flatMap(s=>s.vals).filter(v=>v!=null);
+  if(!vals.length)return '<div class="mut" style="text-align:center;padding:26px 10px">Sin datos todavía</div>';
+  const W=360,H=240,L=40,R=18,T=26,B=30,n=labels.length;let mn=Math.min(...vals),mx=Math.max(...vals);
+  if(mx-mn<20){const c=(mx+mn)/2;mn=c-10;mx=c+10}const pd=(mx-mn)*.2,span=mx-mn+2*pd;const st=[5,10,20,25,50,100,200,500].find(x=>span/x<=5)||1000;
+  const lo=Math.max(0,Math.floor((mn-pd)/st)*st),hi=Math.ceil((mx+pd)/st)*st;
+  const X=i=>n===1?(L+W-R)/2:L+i*(W-L-R)/(n-1),Y=v=>T+(hi-v)/(hi-lo)*(H-T-B),f=v=>dec?v.toFixed(dec):Math.round(v);
+  let g='';for(let v=lo;v<=hi+.001;v+=st){const y=Y(v);g+=`<line x1="${L}" x2="${W-R}" y1="${y}" y2="${y}" stroke="var(--line)"/><text x="${L-6}" y="${y+3.5}" text-anchor="end" font-size="10" fill="var(--mut)">${Math.round(v)}</text>`}
+  labels.forEach((t,i)=>g+=`<text x="${X(i)}" y="${H-10}" text-anchor="middle" font-size="10.5" fill="var(--mut)" font-weight="700">${esc(t)}</text>`);
+  const order=[...series].sort((a,b)=>(a.strong?1:0)-(b.strong?1:0));
+  order.forEach(sr=>{let d='',prev=null;sr.vals.forEach((v,i)=>{if(v==null){prev=null;return}d+=(prev==null?'M':'L')+X(i).toFixed(1)+' '+Y(v).toFixed(1)+' ';prev=v});
+    g+=`<path d="${d}" fill="none" stroke="${sr.color}" stroke-width="${sr.strong?3.5:2.2}" stroke-linejoin="round" stroke-linecap="round" ${sr.strong?'':'opacity=".9"'}/>`;
+    let last=null;sr.vals.forEach((v,i)=>{if(v==null)return;const x=X(i),y=Y(v);
+      g+=`<circle cx="${x}" cy="${y}" r="${sr.strong?5.5:3.8}" fill="var(--s1)" stroke="${sr.color}" stroke-width="${sr.strong?3:2.2}"><title>${esc(sr.name)}: ${f(v)}</title></circle>`;
+      if(sr.strong||series.length===1){g+=`<text x="${x}" y="${y-11}" text-anchor="middle" font-size="11.5" font-weight="900" fill="var(--ink)">${f(v)}</text>`;
+        if(last!=null){const dv=v-last;g+=`<text x="${x}" y="${y+20}" text-anchor="middle" font-size="10.5" font-weight="800" fill="${dv>0?'#1fa855':dv<0?'#e3262e':'var(--mut)'}">${dv>0?'▲ +':dv<0?'▼ ':'= '}${dv?f(dv):''}</text>`}}
+      last=v})});
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Gráfica de evolución">${g}</svg>
+   <div class="legend lg">${series.map(sr=>`<span><i style="background:${sr.color};border-color:${sr.color}"></i>${esc(sr.name)}${sr.strong?' ⭐':''}</span>`).join('')}</div>`}
+const scChip=(x,drop)=>x?`<span class="sc s${Math.min(5,x.scr)} ${drop?'drop':''}" title="${x.pts} pts · SCR ${x.scr}">${x.scr}</span>`:`<span class="sc s0 ${drop?'drop':''}" title="No vino">·</span>`;
+function vLiga(){const keys=ligaKeys();
+  if(!keys.length)return empty('Todavía no hay ligas','Al crear una jornada elige su liga y su número de tirada, o importa la liga que tengas en el Excel.','<div class="stack" style="margin-top:16px"><button class="btn prim" data-act="import">📥 Importar liga</button></div>');
+  if(!ligaK||!keys.includes(ligaK)){const cur=ligaOf(today()).k;ligaK=keys.includes(cur)?cur:keys[0]}
+  const Lg=ligaCalc(ligaK),m=LMON[ligaK[0]];
+  const head=`<div class="lhead"><select class="in" id="ligaSel" aria-label="Liga">${keys.map(k=>`<option value="${k}" ${k===ligaK?'selected':''}>🏹 ${ligaName(k)}</option>`).join('')}</select><button class="iconbtn" data-act="import" aria-label="Importar">📥</button></div>
+  <div class="seg" style="margin-top:10px"><button class="${ligaMode==='tabla'?'on':''}" data-lm="tabla">Clasificación</button><button class="${ligaMode==='graf'?'on':''}" data-lm="graf">Gráficas</button></div>
+  <div class="rstrip">${Lg.rounds.map((rr,i)=>`<div class="rs ${rr?rr.src:''}"><b>${i+1}</b><span>${m[i].slice(0,3)}</span><i>${rr?(rr.src==='app'?'App':'Excel'):'—'}</i></div>`).join('')}</div>`;
+  if(!Lg.people.length)return head+empty('Sin resultados en esta liga','Asigna jornadas a esta liga o importa sus tiradas.');
+  return head+(ligaMode==='tabla'?ligaTabla(Lg):ligaGraf(Lg))}
+function ligaTabla(Lg){const meRow=p=>isMe(p.name)?' class="me"':'';
+  return Lg.groups.map(([c,l])=>`<div class="card catsec"><h3>${esc(c)} <span class="count">${l.length}</span></h3>
+    <div class="tw"><table class="rt"><thead><tr><th>#</th><th>Tirador</th><th>SCR</th><th>Pts</th><th>11</th><th>10</th></tr></thead><tbody>${l.map(p=>
+    `<tr data-person="${esc(p.key)}"${meRow(p)}><td><span class="rk ${!p.out&&p.pos<=3?'r'+p.pos:''}">${p.pos}</span></td><td><div class="tn">${esc(p.name)}${isMe(p.name)?' <span class="tag metag">YO</span>':''}</div>
+      <div class="scs">${p.rounds.map((x,i)=>scChip(x,i===p.drop)).join('')}</div>${p.out?'<div class="tc" style="color:var(--r)">No opta a premio · '+p.att+' tirada'+(p.att===1?'':'s')+'</div>':''}</td>
+      <td class="tp">${p.scr}</td><td>${p.pts}</td><td>${p.n11}</td><td>${p.n10}</td></tr>`).join('')}</tbody></table></div></div>`).join('')+
+  `<div class="note">SCR por tirada y categoría: 1º 5 · 2º 4 · 3º 3 · 4º 2 · resto 1 · no viene 0. Orden: SCR, puntos, 11 y 10. ${Lg.held===6?'Tachada: la tirada anulada (la de menor SCR).':'Al completar las 6 tiradas se anulará la de menor SCR de cada tirador.'} Quien ya no puede llegar a 4 tiradas va al final y no opta a premio.</div>
+  <div class="card"><h3>Compartir y exportar</h3><div class="grid2" style="margin-top:10px"><button class="btn wa" data-act="ligaText">${WA_ICON} Clasificación</button><button class="btn" data-act="ligaCode">📤 Enviar liga</button></div>
+   <div class="grid2" style="margin-top:8px"><button class="btn sm" data-act="ligaCsv">CSV de la liga</button>${Object.keys(getLiga(Lg.k)?.manual||{}).length?'<button class="btn sm danger" data-act="ligaWipe">Borrar tiradas del Excel</button>':''}</div></div>`}
+function pickFor(Lg,list){const meP=list.find(p=>isMe(p.name));if(!ligaPick||!list.some(p=>ligaPick.has(p.key))){ligaPick=new Set(list.filter(p=>!p.out).slice(0,3).map(p=>p.key));if(meP)ligaPick.add(meP.key)}return list.filter(p=>ligaPick.has(p.key))}
+function seriesOf(sel,valFn){let c=0;return sel.map(p=>({key:p.key,name:p.name,strong:isMe(p.name),color:isMe(p.name)?'#ffd21f':PAL[c++%PAL.length],vals:valFn(p)}))}
+function ligaGraf(Lg){const cats=Lg.groups.map(g=>g[0]);const meP=Lg.people.find(p=>isMe(p.name));
+  if(!ligaCat||!cats.includes(ligaCat))ligaCat=meP?meP.cat:cats[0];
+  const list=Lg.groups.find(g=>g[0]===ligaCat)[1],sel=pickFor(Lg,list),m=LMON[Lg.k[0]];
+  const s1=seriesOf(sel,p=>p.rounds.map(x=>x?x.pts:null));
+  const keys=ligaKeys().slice().sort((a,b)=>ligaOrd(a)-ligaOrd(b)),calcs=keys.map(k=>k===Lg.k?Lg:ligaCalc(k));
+  const s2=seriesOf(sel,p=>calcs.map(C=>{const q=C.people.find(x=>x.key===p.key);return q?(ligaMetric==='avg'?q.avg:q.pts):null}));
+  const rows=sel.map(p=>{const v=p.rounds.map(x=>x?x.pts:null).map((x,i,a)=>({x,i})).filter(o=>o.x!=null);const last=v[v.length-1],prev=v[v.length-2];const dv=last&&prev?last.x-prev.x:null;
+    return `<div class="li"><span class="av" style="background:${isMe(p.name)?'#ffd21f':'var(--s3)'}">${esc(initials(p.name))}</span><div class="lt"><b>${esc(p.name)}</b><span>Media ${p.avg.toFixed(1)} · ${p.att} tirada${p.att===1?'':'s'}</span></div>
+    <div style="text-align:right"><b style="font-size:18px">${last?last.x:'–'}</b><div style="font-size:12px;font-weight:800;color:${dv>0?'#1fa855':dv<0?'#e3262e':'var(--mut)'}">${dv==null?(last?m[last.i].slice(0,3):''):(dv>0?'▲ +'+dv:dv<0?'▼ '+dv:'= 0')+' vs '+m[prev.i].slice(0,3)}</div></div></div>`}).join('');
+  return `<label class="fld"><span>Categoría</span><select class="in" id="ligaCatSel">${cats.map(c=>`<option ${c===ligaCat?'selected':''}>${esc(c)}</option>`).join('')}</select></label>
+  <div class="pchips">${list.map(p=>{const col=s1.find(x=>x.key===p.key)?.color;return `<button class="${col?'on':''}" data-lp="${esc(p.key)}">${col?`<i style="background:${col}"></i>`:''}${isMe(p.name)?'⭐ ':''}${esc(p.name.split(' ').slice(0,2).join(' '))}</button>`}).join('')}</div>
+  <div class="card"><h3>Puntos por tirada · ${esc(ligaName(Lg.k))}</h3><p class="mut" style="margin:4px 0 0;font-size:12px">▲ / ▼: diferencia con la tirada anterior${sel.some(p=>isMe(p.name))?' (tus puntos en amarillo)':''}.</p>${lineChart(m.map(x=>x.slice(0,3)),s1)}${rows}</div>
+  <div class="card"><h3>Entre ligas</h3><div class="seg sm" style="margin-top:8px"><button class="${ligaMetric==='tot'?'on':''}" data-lmet="tot">Total de la liga</button><button class="${ligaMetric==='avg'?'on':''}" data-lmet="avg">Media por tirada</button></div>
+   ${lineChart(keys.map(ligaShort),s2,{dec:ligaMetric==='avg'?1:0})}
+   <p class="mut" style="font-size:12px;margin:6px 0 0">${keys.length<2?'Cuando tengas más ligas (Apertura y Clausura) verás aquí si mejoras de una a otra.':'Cada punto es una liga completa: Ape = Apertura (ene–jun), Cla = Clausura (jul–dic).'} ${ligaMetric==='tot'?'El total depende de cuántas tiradas hayas ido; la media por tirada compara mejor.':''}</p></div>`}
+function personSheet(key){const Lg=ligaCalc(ligaK),p=Lg.people.find(x=>x.key===key);if(!p)return;const m=LMON[Lg.k[0]];let prev=null;
+  sheet(`${shead(esc(p.name))}<div class="mut">${esc(p.cat)} · ${esc(ligaName(Lg.k))}${p.out?' · <b style="color:var(--r)">No opta a premio</b>':''}</div>
+  <div class="kpis"><div class="kpi"><b>${p.pos}º</b><span>Puesto</span></div><div class="kpi"><b>${p.scr}</b><span>SCR</span></div><div class="kpi"><b>${p.pts}</b><span>Puntos</span></div>
+  <div class="kpi"><b>${p.att}/6</b><span>Tiradas</span></div><div class="kpi"><b>${p.avg.toFixed(1)}</b><span>Media / tirada</span></div><div class="kpi"><b>${p.n11}</b><span>Onces</span></div></div>
+  <h4>Evolución</h4>${lineChart(m.map(x=>x.slice(0,3)),[{name:p.name,strong:true,color:'#ffd21f',vals:p.rounds.map(x=>x?x.pts:null)}])}
+  <table class="prog-t"><thead><tr><th>Tirada</th><th>Puntos</th><th>Dif.</th><th>SCR</th><th>11</th><th>10</th></tr></thead><tbody>${p.rounds.map((x,i)=>{const dv=x&&prev!=null?x.pts-prev:null;if(x)prev=x.pts;
+    return `<tr ${i===p.drop?'style="opacity:.45;text-decoration:line-through"':''}><td>${i+1} · ${m[i].slice(0,3)}</td><td>${x?x.pts:'No vino'}</td><td style="font-weight:800;color:${dv>0?'#1fa855':dv<0?'#e3262e':'var(--mut)'}">${dv==null?'–':(dv>0?'+':'')+dv}</td><td>${x?x.scr:0}</td><td>${x?x.n11:'–'}</td><td>${x?x.n10:'–'}</td></tr>`}).join('')}</tbody></table>
+  ${p.drop>=0?`<p class="mut" style="font-size:12px">Tachada: tirada anulada (${m[p.drop]}).</p>`:''}`)}
+function ligaText(){const Lg=ligaCalc(ligaK);let t=`🏹 *Liga ${ligaName(Lg.k)}* · ${Lg.held}/6 tiradas\n`;
+  Lg.groups.forEach(([c,l])=>{t+=`\n🏆 *${c}*\n`;l.forEach(p=>{const md=!p.out&&p.pos<=3?['🥇','🥈','🥉'][p.pos-1]:p.pos+'.';t+=`${md} ${p.name} — SCR *${p.scr}* · ${p.pts} pts (11×${p.n11} · 10×${p.n10})${p.out?' _no opta_':''}\n`})});
+  return t+'\n_Recorrido 3D_'}
+function makeLigaCode(k){const rounds=[1,2,3,4,5,6].map(r=>({r,rr:roundRes(k,r)})).filter(x=>x.rr);
+  const o={v:1,t:'liga',l:{s:k[0],y:+k.slice(1)},r:rounds.map(({r,rr})=>({r,res:rr.list.map(x=>[x.name,x.mod,x.sex,x.age,x.pts,x.scr,x.n11,x.n10])}))};
+  return 'R3L:'+b64e(JSON.stringify(o))}
+function readLigaCode(txt){const mm=String(txt).replace(/\s+/g,'').match(/R3L:([A-Za-z0-9+/=]+)/);if(!mm)throw new Error('No encuentro ningún código de liga en el texto.');
+  let o;try{o=JSON.parse(b64d(mm[1]))}catch(e){throw new Error('El código de liga está incompleto o dañado. Copia el mensaje entero otra vez.')}
+  if(!o||o.v!==1||o.t!=='liga'||!Array.isArray(o.r)||!/^[AC]$/.test(o.l?.s)||!(o.l?.y>2000))throw new Error('Este código de liga no es compatible.');
+  o.k=o.l.s+o.l.y;o.r=o.r.filter(x=>x.r>=1&&x.r<=6&&Array.isArray(x.res));return o}
+function importLiga(o){const l=getLiga(o.k,true);o.r.forEach(x=>{l.manual[x.r]=x.res.map(a=>[String(a[0]||'').slice(0,70),String(a[1]||''),String(a[2]||''),String(a[3]||''),+a[4]||0,+a[5]||0,+a[6]||0,+a[7]||0])});
+  save();closeSheet();ligaK=o.k;view='liga';ligaPick=null;render();scrollTo({top:0});toast(`${ligaName(o.k)}: ${o.r.length} tirada${o.r.length===1?'':'s'} importada${o.r.length===1?'':'s'}`)}
+function ligaCsv(){const Lg=ligaCalc(ligaK),m=LMON[Lg.k[0]];const rows=[['Categoría','Puesto','Tirador',...m.flatMap(x=>[x+' puntos',x+' SCR']),'SCR','Puntos','11','10','Tiradas','Tirada anulada','Opta a premio']];
+  Lg.groups.forEach(([c,l])=>l.forEach(p=>rows.push([c,p.pos,p.name,...p.rounds.flatMap(x=>x?[x.pts,x.scr]:['',0]),p.scr,p.pts,p.n11,p.n10,p.att,p.drop>=0?m[p.drop]:'',p.out?'No':'Sí'])));
+  saveFile(`liga_${slug(ligaName(Lg.k))}.csv`,csv(rows),'text/csv')}
+
 /* ===== AJUSTES ===== */
 function settingsSheet(){const S=db.settings;
   sheet(`${shead('Ajustes')}
   <h4>Apariencia</h4><div class="segr" id="themeSeg">${[['dark','🌙 Oscuro'],['light','☀️ Claro'],['auto','Auto']].map(([v,l])=>`<label><input type="radio" name="theme" value="${v}" ${S.theme===v?'checked':''}><span>${l}</span></label>`).join('')}</div>
+  <h4>Yo soy</h4><input class="in" id="me" maxlength="70" placeholder="Tu nombre como aparece en la liga" value="${esc(S.me)}"><p class="mut" style="font-size:12px;margin:6px 0 0">Se te destaca en la clasificación y las gráficas de la liga.</p>
   <h4>Anotador</h4><input class="in" id="scorer" maxlength="40" placeholder="Tu nombre (aparece al enviar la patrulla)" value="${esc(S.scorer)}">
   <h4>En el recorrido</h4>
   <label class="sw"><div>Vibración al marcar<small>No disponible en iPhone</small></div><input type="checkbox" data-set="vibrate" ${S.vibrate?'checked':''}></label>
@@ -692,6 +844,7 @@ function settingsSheet(){const S=db.settings;
     $$('[name=theme]',s).forEach(r=>r.addEventListener('change',()=>{S.theme=r.value;applyTheme();save()}));
     $$('[data-set]',s).forEach(c=>c.addEventListener('change',()=>{S[c.dataset.set]=c.checked;save();wake()}));
     $('#scorer',s).addEventListener('change',e=>{S.scorer=e.target.value.trim();save()});
+    $('#me',s).addEventListener('change',e=>{S.me=e.target.value.trim();ligaPick=null;save();render()});
     const lines=t=>[...new Set(t.split('\n').map(x=>x.trim()).filter(Boolean))];
     $('#mods',s).addEventListener('change',e=>{const l=lines(e.target.value);S.mods=l.length?l:DEF_MODS.slice();save();render()});
     $('#ages',s).addEventListener('change',e=>{const l=lines(e.target.value);S.ages=l.length?l:DEF_AGES.slice();save();render()});
@@ -700,13 +853,17 @@ function settingsSheet(){const S=db.settings;
       localStorage.setItem(KEY,JSON.stringify(d));db=load();undo=[];applyTheme();save();view=J()?'score':'jornadas';render();toast('Copia restaurada')}catch(_){toast('Ese archivo no es una copia válida')}});
     s.addEventListener('click',async e=>{const b=e.target.closest('[data-s]');if(!b)return;
       if(b.dataset.s==='backup')saveFile(`recorrido3d_copia_${today()}.json`,JSON.stringify(db),'application/json');
-      else if(b.dataset.s==='wipe'){if(await ask('Se borrarán <b>todas las jornadas, tiradores y puntuaciones</b> de este móvil. No se puede deshacer.','Borrar todo',true)){const keep=db.settings;db={jornadas:[],activeId:null,settings:keep};undo=[];save();view='jornadas';render();toast('Datos borrados')}}})})}
+      else if(b.dataset.s==='wipe'){if(await ask('Se borrarán <b>todas las jornadas, tiradores y puntuaciones</b> de este móvil. No se puede deshacer.','Borrar todo',true)){const keep=db.settings;db={jornadas:[],ligas:[],activeId:null,settings:keep};undo=[];save();view='jornadas';render();toast('Datos borrados')}}})})}
 
 /* ---------- Eventos ---------- */
 const ACT={prev:()=>goT(J().cur-1),next:()=>goT(J().cur+1),map:()=>{mapOpen=!mapOpen;render()},gorank:()=>go('rank'),undo:doUndo,clearT,
   newJ:()=>jSheet(),settings:settingsSheet,waText:()=>textSheet('Compartir clasificación',rankText(J())),img:imgSheet,sendCode:sendCodeSheet,import:importSheet,csv:csvRank,csv2:csvDetail,
   install:async()=>{if(!deferredPrompt)return;deferredPrompt.prompt();await deferredPrompt.userChoice.catch(()=>{});deferredPrompt=null;closeSheet();render()},
-  hideInstall:()=>{db.settings.hideInstall=true;save();render()}};
+  hideInstall:()=>{db.settings.hideInstall=true;save();render()},
+  ligaText:()=>textSheet('Clasificación de la liga',ligaText()),
+  ligaCode:()=>textSheet('Enviar liga',`🏹 Recorrido 3D · Liga ${ligaName(ligaK)}\nPara importarla: abre Recorrido 3D → Liga → 📥 y pega este mensaje entero.\n${makeLigaCode(ligaK)}`,'<p class="mut" style="margin:0 0 10px">Envíala a otros tiradores para que vean la clasificación y las gráficas en su móvil.</p>'),
+  ligaCsv,
+  ligaWipe:async()=>{if(!(await ask(`Se borrarán las tiradas importadas del Excel en la ${ligaName(ligaK)}. Las jornadas anotadas en la app no se tocan.`,'Borrar',true)))return;const l=getLiga(ligaK);if(l)l.manual={};db.ligas=db.ligas.filter(x=>Object.keys(x.manual).length||db.jornadas.some(j=>j.liga===x.k));save();render();toast('Tiradas del Excel borradas')}};
 document.addEventListener('click',e=>{const t=e.target;let el;
   if(el=t.closest('[data-act]')){const f=ACT[el.dataset.act];if(f){f();return}}
   if(t.closest('.sheet')&&!t.closest('[data-stat],[data-tab]'))return;
@@ -720,6 +877,10 @@ document.addEventListener('click',e=>{const t=e.target;let el;
   if(el=t.closest('[data-t]')){goT(+el.dataset.t);return}
   if(el=t.closest('[data-stat]')){statSheet(el.dataset.stat);return}
   if(el=t.closest('[data-rm]')){rankMode=el.dataset.rm;render();return}
+  if(el=t.closest('[data-lm]')){ligaMode=el.dataset.lm;render();return}
+  if(el=t.closest('[data-lp]')){const k=el.dataset.lp;if(ligaPick.has(k)){if(ligaPick.size>1)ligaPick.delete(k)}else ligaPick.add(k);render();return}
+  if(el=t.closest('[data-lmet]')){ligaMetric=el.dataset.lmet;render();return}
+  if(el=t.closest('[data-person]')){personSheet(el.dataset.person);return}
   if(el=t.closest('[data-ustep]')){const j=J(),cu=upTo(j)||j.n;let nu=cu+(+el.dataset.ustep);rankUpTo=nu>=j.n?0:Math.max(1,nu);render();return}
   if(el=t.closest('[data-open]')){db.activeId=el.dataset.open;undo=[];save();go('score');return}
   if(el=t.closest('[data-editj]')){jSheet(el.dataset.editj);return}
@@ -728,7 +889,7 @@ document.addEventListener('click',e=>{const t=e.target;let el;
   if(el=t.closest('[data-edita]')){editArcherSheet(el.dataset.edita);return}
   if(el=t.closest('[data-dela]')){delArcher(el.dataset.dela);return}
   if(el=t.closest('[data-up]')){moveUp(el.dataset.up);return}});
-document.addEventListener('change',e=>{if(e.target.id==='uptoSel'){rankUpTo=+e.target.value;render()}});
+document.addEventListener('change',e=>{const id=e.target.id;if(id==='uptoSel'){rankUpTo=+e.target.value;render()}else if(id==='ligaSel'){ligaK=e.target.value;ligaPick=null;ligaCat=null;render()}else if(id==='ligaCatSel'){ligaCat=e.target.value;ligaPick=null;render()}});
 document.addEventListener('submit',e=>{if(e.target.id==='addA'){e.preventDefault();addArcher(e.target)}});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('.sheetwrap'))closeSheet();
   if(view==='score'&&!$('.sheetwrap')&&!/INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName||'')&&J()){if(e.key==='ArrowRight')goT(J().cur+1);if(e.key==='ArrowLeft')goT(J().cur-1)}});

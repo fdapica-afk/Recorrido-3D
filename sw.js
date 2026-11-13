@@ -1,6 +1,6 @@
 /* Recorrido 3D – service worker: funciona sin conexión.
    Cuando cambies index.html, sube también este archivo cambiando la versión. */
-const CACHE = 'recorrido3d-v1.1.0';
+const CACHE = 'recorrido3d-v1.2.0';
 const ASSETS = ['./', './index.html', './manifest.webmanifest',
   './icons/icon.svg', './icons/icon-192.png', './icons/icon-512.png',
   './icons/maskable-192.png', './icons/maskable-512.png',
